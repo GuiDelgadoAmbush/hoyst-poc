@@ -1,25 +1,32 @@
-# CODING AGENTS: READ THIS FIRST
+# Hoyst POC
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+A curated real estate collection experience — two pages built for sharing with clients.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## Pages
 
-## What you should do — IMPORTANT
+- **[Hoyst Curated Collection](index.html)** — The entry point. Three hand-picked residential packages presented by an advisor.
+- **[The Aspire – Package Detail](The%20Aspire%20-%20Package%20Detail.html)** — Deep-dive on a single property with investment projections and editorial storytelling.
 
-**Read the chat transcripts first.** There are 13 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+## Viewing locally
 
-**Find the primary design file under `project/` and read it top to bottom.** The chat transcripts will tell you which file the user was last iterating on. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+Open `index.html` in a browser. If fonts or images don't load, serve the folder instead:
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+```
+python3 -m http.server
+```
 
-## About the design files
+Then visit `http://localhost:8000`.
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+## Structure
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
-
-## Bundle contents
-
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Hoyst POC` project files (HTML prototypes, assets, components)
+```
+├── index.html                          ← Curated Collection (entry)
+├── The Aspire - Package Detail.html    ← linked from the collection
+├── image-slot.js
+├── .image-slots.state.json             ← holds property images (don't delete)
+└── assets/
+    ├── hoyst-logo.png
+    ├── hoyst-logo-trim.png
+    ├── hero-exterior.png
+    └── hero-exterior-2.png
+```
