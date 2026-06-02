@@ -1,0 +1,3378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hoyst — The Aspire · Cloverton</title>
+<meta name="viewport" content="width=1440">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts/atkinson-mono.css">
+<script src="image-slot.js"></script>
+<style>
+  :root{
+    --bg: #0e0e0d;
+    --paper: #131312;
+    --ink: #f2f0ec;
+    --ink-2: #c9c6bf;
+    --ink-3: #8e8a82;
+    --ink-4: #5c5953;
+    --rule: #26241f;
+    --rule-2: #1c1b18;
+    --placeholder: #1a1917;
+    --placeholder-ink: #4a4842;
+    --sans: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --serif: "Cormorant Garamond", "EB Garamond", "Palatino", Georgia, serif;
+  }
+
+  *{box-sizing:border-box}
+  html, body{
+    margin:0; padding:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+
+  /* ===== Page-level scroll snap =====
+     (Removed — was causing jarring stops on the snapshot section.
+     Page now scrolls freely throughout.) */
+  html{
+    scroll-snap-type: none;
+  }
+
+  /* ============== Fixed Top Bar ============== */
+  .topbar{
+    position:fixed; top:0; left:0; right:0;
+    height:64px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 0 40px 0 24px;
+    background: linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%);
+    z-index: 50;
+  }
+  .topbar.scrolled{
+    background: rgba(14,14,13,.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+    transition: background .3s ease, border-color .3s ease;
+  }
+  .topbar .left{display:flex;align-items:center;gap:24px;}
+  .logo-slot{display:flex; align-items:center; height: 40px;}
+  .logo-slot img{display:block; height: 36px; width: auto;}
+  .topbar .right{display:flex;align-items:center;gap:32px;}
+  .nav-link{
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink);
+    text-decoration:none;
+    font-weight:500;
+    opacity:.85;
+  }
+  .nav-link:hover{opacity:1;}
+  .client-tag{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color: rgba(242,240,236,.65);
+  }
+  .client-tag b{color:var(--ink); font-weight:500;}
+  .back-link{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family: "Atkinson Hyperlegible Mono", monospace;
+    font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color: var(--ink); text-decoration:none; font-weight:500;
+    opacity:.75;
+    transition: opacity .2s ease;
+  }
+  .back-link:hover{opacity:1;}
+  .back-link .arrow{display:inline-block; transition:transform .25s ease;}
+  .back-link:hover .arrow{transform:translateX(-3px);}
+
+  /* ============== HERO — full bleed ============== */
+  .hero{
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    min-height: 720px;
+    overflow: hidden;
+    color: var(--ink);
+    background: #000;
+  }
+  .hero .img-layer{
+    position:absolute; inset:0;
+    z-index: 0;
+  }
+  .hero .img-layer img.hero-photo{
+    width:100%; height:100%; display:block;
+    object-fit: cover;
+    /* Portrait source — center the image so the full house sits in
+       the visible window with the canopy above and the stone path
+       just kissing the lower edge. */
+    object-position: 50% 50%;
+  }
+  /* Dim the photo only at the edges to keep type legible without
+     muddying the photo itself. */
+  .hero .img-layer::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.50) 0%, rgba(0,0,0,0) 28%, rgba(0,0,0,0) 42%, rgba(0,0,0,.35) 72%, rgba(0,0,0,.78) 100%),
+      linear-gradient(90deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,0) 32%);
+    pointer-events:none;
+    z-index: 1;
+  }
+
+  .hero .overlay{
+    position:absolute; inset:0;
+    z-index: 2;
+    padding: 96px clamp(40px, 5vw, 72px) clamp(40px, 5vh, 72px);
+    display: grid;
+    grid-template-rows: 1fr auto;
+    pointer-events: none;
+  }
+  .hero .overlay > *{ pointer-events: auto; }
+
+  /* TOP ROW — eyebrow + huge "The" */
+  .hero-top{
+    display:flex; flex-direction:column; gap: 14px;
+    align-self: start;
+  }
+  .hero-eyebrow{
+    font-size: 11px;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: .8;
+    font-weight: 500;
+    display:inline-flex; align-items:center; gap:14px;
+    white-space: nowrap;
+  }
+  .hero-eyebrow .rule{width:32px; height:1px; background: currentColor;}
+
+  .hero-display-sans{
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: clamp(96px, 13vw, 200px);
+    line-height: .88;
+    letter-spacing: -.035em;
+    margin: 0;
+    color: var(--ink);
+    text-shadow: 0 2px 30px rgba(0,0,0,.35);
+  }
+
+  /* BOTTOM ROW — left tagline / meta, right huge serif word */
+  .hero-bottom{
+    display:grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 40px;
+  }
+  .hero-meta{
+    display:flex; flex-direction:column; gap: 16px;
+    max-width: 460px;
+  }
+  .hero-tagline{
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.15;
+    color: var(--ink);
+    letter-spacing: -.01em;
+    margin: 0;
+  }
+  .hero-tagline em{
+    font-family: var(--serif);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.4em;
+    line-height: .9;
+    letter-spacing: -.015em;
+  }
+  .hero-meta .crumb{
+    display:flex; flex-direction:column; gap: 4px;
+    font-size: 12px;
+    letter-spacing:.16em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .hero-meta .crumb .place{font-weight:500;}
+  .hero-meta .crumb .sub{
+    color: rgba(242,240,236,.65);
+    font-weight: 400;
+  }
+
+  .hero-display-serif{
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(110px, 12.5vw, 200px);
+    line-height: .82;
+    letter-spacing: -.02em;
+    color: var(--ink);
+    margin: 0;
+    text-shadow: 0 2px 40px rgba(0,0,0,.4);
+    align-self: end;
+    justify-self: end;
+    transform: translateY(.04em);
+    white-space: nowrap;
+  }
+
+  /* tiny scroll hint anchored bottom-center on the hero */
+  .scroll-hint{
+    position:absolute;
+    left: 50%; bottom: 20px;
+    transform: translateX(-50%);
+    display:inline-flex; flex-direction:column; align-items:center; gap: 8px;
+    font-size: 10px;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: rgba(242,240,236,.55);
+    z-index: 3;
+    pointer-events: none;
+  }
+  .scroll-hint .dot{
+    display:inline-block;
+    width: 1px;
+    height: 28px;
+    background: linear-gradient(180deg, rgba(242,240,236,.55) 0%, rgba(242,240,236,0) 100%);
+    animation: scrollNudge 2.4s ease-in-out infinite;
+    transform-origin: top center;
+  }
+  @keyframes scrollNudge{
+    0%, 100%{ transform: scaleY(.6); opacity:.5;}
+    50%     { transform: scaleY(1);   opacity:1;}
+  }
+
+  /* ============== DETAILS SECTION (below hero) ============== */
+  .details{
+    padding: clamp(72px, 9vh, 120px) clamp(40px, 5vw, 72px) clamp(72px, 9vh, 120px);
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .details-head{
+    display:grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(40px, 6vw, 88px);
+    align-items: start;
+    padding-top: clamp(48px, 6vh, 72px);
+  }
+  .details-eyebrow{
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color: var(--ink-4);
+    display:flex; align-items:center; gap:12px;
+    margin-bottom: 20px;
+  }
+  .details-eyebrow .rule{width:32px; height:1px; background:var(--ink-4);}
+  .details-title{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(34px, 3.6vw, 52px);
+    line-height: 1.05;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: -.005em;
+  }
+  .details-title em{font-style: italic;}
+  .details-lead{
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 56ch;
+    margin: 0;
+  }
+  .details-lead + .details-lead{margin-top: 14px;}
+
+  /* Config + Price block — primary slot */
+  .at-a-glance{
+    display:grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: clamp(40px, 5vw, 80px);
+    align-items: start;
+    padding-bottom: clamp(48px, 6vh, 72px);
+  }
+
+  .price-block{
+    display:flex; flex-direction:column;
+  }
+  .price-block .ptype{
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 16px;
+    display:inline-flex; align-items:center; gap: 10px;
+  }
+  .price-block .ptype::before{
+    content:""; width:6px; height:6px;
+    background: #A5402D;
+  }
+  .price-block .total{
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: clamp(56px, 6.8vw, 96px);
+    line-height: 1;
+    letter-spacing: -.025em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .price-block .breakdown{
+    display:flex; align-items:center; gap: 20px;
+    margin-top: 18px;
+    font-size: 14px;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .price-block .breakdown .lab{
+    font-size:10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color: var(--ink-4);
+    margin-right: 8px;
+  }
+  .price-block .breakdown .dot{
+    width: 3px; height:3px; border-radius:50%;
+    background: var(--ink-4);
+    display:inline-block;
+  }
+  .price-block .validity{
+    margin-top: 22px;
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* Config & specs side */
+  .key-specs{
+    display:flex; flex-direction:column; gap: 28px;
+  }
+  .config-row{
+    display:flex; align-items:center; gap: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .config{
+    display:flex; align-items:baseline; gap: 10px;
+    color: var(--ink);
+    font-size: 18px;
+  }
+  .config svg{
+    width: 20px; height: 20px;
+    stroke: var(--ink-2);
+    fill: none;
+    stroke-width: 1.4;
+    align-self: center;
+  }
+  .config .v{font-variant-numeric: tabular-nums; font-weight: 400;}
+  .config .k{
+    font-size:10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color: var(--ink-4);
+  }
+
+  .spec-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .spec-grid .cell{
+    display:flex; flex-direction:column; gap: 10px;
+    padding: 0 20px 0 0;
+    border-right: 1px solid var(--rule);
+  }
+  .spec-grid .cell:last-child{border-right: none; padding-right: 0;}
+  .spec-grid .cell + .cell{padding-left: 20px;}
+  .spec-grid .k{
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .spec-grid .v{
+    font-size: 22px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.005em;
+    font-weight: 300;
+  }
+  .spec-grid .v .unit{
+    color: var(--ink-3);
+    font-size: 13px;
+    margin-left: 4px;
+    letter-spacing: .04em;
+  }
+
+  /* CTA row */
+  .cta-row{
+    display:flex; align-items:center; gap: 14px;
+    flex-wrap: wrap;
+    padding-top: clamp(36px, 4vh, 48px);
+  }
+  .btn{
+    appearance: none;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 18px 32px;
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .25s ease, color .25s ease, border-color .25s ease;
+    display:inline-flex; align-items:center; gap: 10px;
+  }
+  .btn:hover{
+    background: transparent;
+    color: var(--ink);
+  }
+  .btn.ghost{
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--rule);
+  }
+  .btn.ghost:hover{
+    border-color: var(--ink);
+  }
+
+  /* Placeholder for future sections */
+  .next-section-stub{
+    padding: clamp(40px, 6vh, 80px) clamp(40px, 5vw, 72px);
+    max-width: 1280px;
+    margin: 0 auto;
+    color: var(--ink-4);
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+  }
+
+  /* ============== INVESTMENT SNAPSHOT ============== */
+  /* ===== Investment Snapshot — sticky two-state composition =====
+     STATE A (default): only the eyebrow + sentence are visible,
+       composed in the optical center of the sticky stage. The sentence
+       reveals word-by-word on first viewport entry (IO + .is-revealing).
+     STATE B (.is-advanced, set by JS once scroll passes a trigger):
+       the title block animates UP to its top position and the chart,
+       strip and disclaimer compose in beneath it. Both states use long,
+       Apple-style cubic-bezier transitions — NOT scroll-tied opacity. */
+  .snapshot-scroll{
+    position: relative;
+    /* Snap target removed — was causing jarring stops during natural
+       scroll. The sticky stage handles the read pacing on its own. */
+    scroll-margin-top: 18vh;
+  }
+  .snapshot-stage-wrap{
+    position: relative;
+    /* enough scroll room that the user reads State A, crosses the
+       trigger, and has space to take in State B before leaving */
+    height: 200vh;
+  }
+  .snapshot-stage{
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    max-width: 1280px;
+    margin: 0 auto;
+    /* --pt is the padding-top, exposed as a var so the centering
+       formula below can compensate for it on any viewport. */
+    --pt: clamp(80px, 10vh, 120px);
+    padding: var(--pt) clamp(40px, 5vw, 72px) clamp(40px, 5vh, 60px);
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(24px, 3vh, 36px);
+  }
+
+  /* ----- Title block (eyebrow + sentence) -----
+     Lives in normal flex flow. STATE A shifts it down with transform so
+     its visual centre lands at 50vh; STATE B lets it sit at its natural
+     top position. The translateY is computed from the element's own
+     height (50%) and the stage padding (var(--pt)) so it stays
+     correctly centered no matter how tall the viewport is. */
+  .snap-title-block{
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 2vh, 28px);
+    transform: translateY(calc(50vh - 50% - var(--pt)));
+    transition: transform 1.15s cubic-bezier(.22, 1, .36, 1);
+    will-change: transform;
+  }
+  .snapshot-stage.is-advanced .snap-title-block{
+    transform: translateY(0);
+  }
+
+  .snapshot-eyebrow{
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    margin: 0;
+    /* Reveals in unison with the sentence \u2014 same easing, slightly\n       ahead so it reads as the label introducing the line. */
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity .9s cubic-bezier(.2,.6,.2,1),
+      transform .9s cubic-bezier(.2,.6,.2,1);
+  }
+  .snapshot-scroll.is-revealing .snapshot-eyebrow{
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Editorial sentence — anchored left, words reveal on first
+     viewport entry (handled by IO + .is-revealing). */
+  .snapshot-sentence{
+    font-family: var(--sans);
+    font-weight: 500;
+    font-style: normal;
+    font-size: clamp(40px, 4.2vw, 60px);
+    line-height: 1.32;
+    color: var(--ink);
+    letter-spacing: -.015em;
+    margin: 0;
+    max-width: 100%;
+    text-align: left;
+    text-wrap: pretty;
+  }
+  .snapshot-sentence em{
+    font-family: var(--serif);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.55em;
+    line-height: .9;
+    letter-spacing: -.015em;
+    color: var(--ink);
+  }
+  .snapshot-sentence .num{
+    font-family: var(--sans);
+    font-style: normal;
+    font-weight: 500;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.015em;
+    padding: 0 2px;
+    white-space: nowrap;
+  }
+  .snapshot-sentence .num .approx{
+    font-family: var(--sans);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 1em;
+    color: var(--ink-3);
+    margin-right: .08em;
+    display: inline-block;
+    transform: translateY(-.05em);
+  }
+  .snapshot-sentence .word{
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity .9s cubic-bezier(.2,.6,.2,1),
+      transform .9s cubic-bezier(.2,.6,.2,1);
+    transition-delay: calc(var(--i, 0) * 0.055s);
+    will-change: opacity, transform;
+  }
+  .snapshot-scroll.is-revealing .snapshot-sentence .word{
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ----- Content below the title (chart + strip + footer) -----
+     Sits in normal flex flow underneath the title. STATE A: invisible,
+     gently pushed down. STATE B: composes in. */
+  .snap-below{
+    display: flex;
+    flex-direction: column;
+    gap: clamp(24px, 3vh, 36px);
+    opacity: 0;
+    transform: translateY(40px);
+    transition:
+      opacity 1.15s cubic-bezier(.22, 1, .36, 1),
+      transform 1.15s cubic-bezier(.22, 1, .36, 1);
+    pointer-events: none;
+    will-change: opacity, transform;
+  }
+  .snapshot-stage.is-advanced .snap-below{
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: .15s;
+    pointer-events: auto;
+  }
+
+  /* Light internal stagger inside the below block, also trigger-driven */
+  .snap-strip .cell{
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity .9s cubic-bezier(.22, 1, .36, 1),
+      transform .9s cubic-bezier(.22, 1, .36, 1);
+  }
+  .snap-strip .cell:nth-child(1){ transition-delay: .35s; }
+  .snap-strip .cell:nth-child(2){ transition-delay: .43s; }
+  .snap-strip .cell:nth-child(3){ transition-delay: .51s; }
+  .snap-strip .cell:nth-child(4){ transition-delay: .59s; }
+  .snapshot-stage.is-advanced .snap-strip .cell{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .snapshot-foot{
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity .9s cubic-bezier(.22, 1, .36, 1),
+      transform .9s cubic-bezier(.22, 1, .36, 1);
+    transition-delay: .55s;
+  }
+  .snapshot-stage.is-advanced .snapshot-foot{
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: .7s;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .snapshot-sentence .word,
+    .snapshot-eyebrow,
+    .snap-title-block,
+    .snap-below,
+    .snap-strip .cell,
+    .snapshot-foot{
+      opacity: 1; transform: none; transition: none;
+    }
+    .snap-title-block{ transform: none; }
+  }
+
+  /* ===== Short viewports — same composition, tighter scales =====
+     Below ~900px the stage still goes sticky and snaps; we just shrink
+     type, chart height, padding and gaps so all of State B fits in
+     100vh and nothing is clipped. The centering formula above already
+     adapts via --pt. */
+  @media (max-height: 900px){
+    .snapshot-stage{
+      --pt: clamp(36px, 6vh, 72px);
+      padding: var(--pt) clamp(24px, 5vw, 56px) clamp(24px, 4vh, 56px);
+      gap: clamp(28px, 5vh, 48px);
+    }
+    .snap-title-block{
+      gap: clamp(12px, 1.8vh, 22px);
+    }
+    .snapshot-sentence{
+      font-size: clamp(36px, 5.6vh, 64px);
+      line-height: 1.3;
+    }
+    .snap-below{
+      gap: clamp(20px, 3vh, 32px);
+    }
+    .hero-chart .bars{
+      height: clamp(140px, 22vh, 220px);
+    }
+    .snap-strip{
+      padding-top: clamp(18px, 2.5vh, 28px);
+    }
+    .snapshot-foot{
+      padding-top: clamp(12px, 2vh, 20px);
+    }
+  }
+
+  .hero-chart{
+    position: relative;
+  }
+  .hero-chart .bars{
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(14px, 1.8vw, 28px);
+    height: clamp(280px, 38vh, 380px);
+    position: relative;
+  }
+  .hero-chart .bars .bar{
+    flex: 1 1 0;
+    background: rgba(201, 198, 191, .18);
+    position: relative;
+    cursor: default;
+    transition: background .2s ease;
+  }
+  .hero-chart .bars .bar:hover{
+    background: rgba(201, 198, 191, .32);
+  }
+  .hero-chart .bars .bar::before{
+    content:"";
+    position:absolute;
+    left: 0; right: 0; top: 0;
+    height: 1.5px;
+    background: var(--ink);
+    transition: background .2s ease;
+  }
+  .hero-chart .bars .bar:hover::before{
+    background: #A5402D;
+  }
+  .hero-chart .bars .bar.is-now::before{
+    background: #A5402D;
+  }
+  .hero-chart .bars .bar .pop{
+    position: absolute;
+    bottom: calc(100% + 14px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    letter-spacing: .04em;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .hero-chart .bars .bar.is-end .pop{
+    color: var(--ink);
+    font-weight: 500;
+  }
+  /* Hover tooltip: two-line pill (year + value) for the middle bars
+     that don't show a persistent pop. Anchored to the bar's top edge. */
+  .hero-chart .bars .bar .tip{
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 8px 12px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease, transform .18s ease;
+    z-index: 4;
+  }
+  .hero-chart .bars .bar .tip .year{
+    font-size: 9px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .hero-chart .bars .bar .tip .value{
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .hero-chart .bars .bar:hover .tip{
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  /* Hide persistent pops when ANY bar is hovered to keep one source of
+     truth at a time. Tooltip wins. */
+  .hero-chart .bars:hover .bar.is-now .pop,
+  .hero-chart .bars:hover .bar.is-end .pop{
+    opacity: .25;
+    transition: opacity .18s ease;
+  }
+  /* dashed reference line at today's value */
+  .hero-chart .today-line{
+    position: absolute;
+    left: 0; right: 0;
+    border-top: 1px dashed rgba(33, 54, 167, .55);
+    pointer-events: none;
+  }
+  .hero-chart .today-line::after{
+    content: "Today · $660K";
+    position: absolute;
+    right: 0;
+    top: -22px;
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #A5402D;
+    font-variant-numeric: tabular-nums;
+    background: var(--bg);
+    padding-left: 8px;
+  }
+  .hero-chart .axis{
+    display: flex;
+    gap: clamp(12px, 1.6vw, 24px);
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero-chart .axis span{
+    flex: 1 1 0;
+    text-align: center;
+  }
+
+  /* ===== Bottom strip: 4 stats, label + value + qual (no sparkline) ===== */
+  .snap-strip{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--rule);
+    padding-top: clamp(28px, 3.5vh, 40px);
+  }
+  .snap-strip .cell{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 0 clamp(20px, 2vw, 32px);
+    border-right: 1px solid var(--rule);
+    min-height: 0;
+  }
+  .snap-strip .cell:first-child{
+    padding-left: 0;
+  }
+  .snap-strip .cell:last-child{
+    border-right: none;
+    padding-right: 0;
+  }
+  .snap-strip .lab{
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .snap-strip .val{
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: clamp(28px, 2.4vw, 36px);
+    line-height: 1;
+    letter-spacing: -.015em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    white-space: nowrap;
+  }
+  .snap-strip .val .approx{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: .55em;
+    color: var(--ink-3);
+    line-height: 1;
+    transform: translateY(-.4em);
+    margin-right: 2px;
+  }
+  .snap-strip .val .range{
+    font-size: inherit;
+  }
+  .snap-strip .val .unit{
+    font-size: .42em;
+    color: var(--ink-3);
+    letter-spacing: 0;
+    margin-left: 4px;
+  }
+  .snap-strip .qual{
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .stat-hero .figure{
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: clamp(80px, 9vw, 132px);
+    line-height: .92;
+    letter-spacing: -.03em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  .stat-hero .figure .approx{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: .35em;
+    color: var(--ink-3);
+    line-height: 1;
+    transform: translateY(-.4em);
+    margin-right: 4px;
+  }
+  .stat-hero .figure .unit{
+    font-size: .42em;
+    color: var(--ink-3);
+    letter-spacing: 0;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  .stat-hero .note{
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-top: 8px;
+  }
+
+  /* Supporting stats grid (right column, below lead) */
+  .stat-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-left: 1px solid var(--rule);
+  }
+  /* Existing small sparkline retained for the strip (smaller variant) */
+  .spark{
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 44px;
+  }
+  .spark .bar{
+    flex: 1 1 0;
+    min-width: 0;
+    background: rgba(201, 198, 191, .22);
+    position: relative;
+  }
+  .spark .bar::before{
+    content:"";
+    position:absolute;
+    left: 0; right: 0; top: 0;
+    height: 1px;
+    background: var(--ink-2);
+  }
+  .spark .bar.is-now::before{
+    background: #A5402D;
+    height: 1.5px;
+  }
+
+  /* Hide old structures that are no longer used */
+  .stat-grid .stat{
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: clamp(24px, 3vh, 36px) clamp(24px, 2.6vw, 36px);
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    min-height: 220px;
+  }
+  .stat-grid .stat .lab{
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .stat-grid .stat .val{
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: clamp(40px, 4.4vw, 60px);
+    line-height: 1;
+    letter-spacing: -.02em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    white-space: nowrap;
+  }
+  .stat-grid .stat .val .approx{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: .42em;
+    color: var(--ink-3);
+    line-height: 1;
+    transform: translateY(-.5em);
+    margin-right: 4px;
+  }
+  .stat-grid .stat .val .range{
+    font-size: inherit;
+    color: var(--ink);
+    letter-spacing: -.02em;
+  }
+  .stat-grid .stat .val .unit{
+    font-size: .35em;
+    color: var(--ink-3);
+    letter-spacing: 0;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  .stat-grid .stat .qual{
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .snapshot-foot{
+    margin-top: clamp(40px, 5vh, 60px);
+    padding-top: clamp(24px, 3vh, 32px);
+    border-top: 1px solid var(--rule);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .snapshot-foot .disclaimer{
+    font-size: 11px;
+    line-height: 1.55;
+    color: var(--ink-4);
+    max-width: 64ch;
+    letter-spacing: .01em;
+  }
+  .snapshot-foot .prepared{
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    white-space: nowrap;
+  }
+
+  /* image-slot dark theme */
+  image-slot{
+    --slot-bg: var(--placeholder);
+    --slot-ink: var(--placeholder-ink);
+    background: var(--placeholder);
+    color: var(--placeholder-ink);
+  }
+
+  /* ============== SECTION 2.5 · LIFESTYLE MOMENTS (two-image break) ==============
+     Two image slots side by side, asymmetric (left ~1/3, right ~2/3),
+     equal heights. Sits as a quiet visual breath between Investment
+     Snapshot and Property Overview. */
+  .moments{
+    padding: clamp(64px, 8vh, 120px) clamp(40px, 5vw, 72px);
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .moments-grid{
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 8fr);
+    gap: clamp(12px, 1.4vw, 20px);
+    height: clamp(420px, 64vh, 720px);
+  }
+  .moments-grid .moment{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--placeholder);
+    /* --py is the parallax progress: 0 when the moment's center is at
+       the viewport's center, -1 at top edge, +1 at bottom edge. Set by
+       JS on scroll. */
+    --py: 0;
+  }
+  /* Image-slot is oversized + translated so parallax never reveals
+     empty space at the edges. 130% height with -15% top gives ±15% of
+     vertical headroom; we translate by up to ±60px (well within that). */
+  .moments-grid .moment image-slot{
+    position: absolute;
+    left: 0;
+    top: -15%;
+    width: 100%;
+    height: 130%;
+    display: block;
+    transform: translate3d(0, calc(var(--py) * 60px), 0);
+    will-change: transform;
+  }
+  .moments-grid .moment .cap{
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    padding: 6px 12px;
+    background: rgba(14, 14, 13, .72);
+    backdrop-filter: blur(6px);
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Reveal — both panels drift up; the wider one a beat after the left
+     so the eye lands on the smaller one first and follows across. */
+  .moments-grid .moment{
+    opacity: 0;
+    transform: translateY(36px);
+    transition:
+      opacity 1.1s cubic-bezier(.22, 1, .36, 1),
+      transform 1.1s cubic-bezier(.22, 1, .36, 1);
+    will-change: opacity, transform;
+  }
+  .moments-grid.is-in .moment:nth-child(1){ opacity: 1; transform: none; transition-delay: 0s; }
+  .moments-grid.is-in .moment:nth-child(2){ opacity: 1; transform: none; transition-delay: .12s; }
+
+  @media (prefers-reduced-motion: reduce){
+    .moments-grid .moment{
+      opacity: 1; transform: none; transition: none;
+    }
+  }
+
+  /* ============== SECTION 3 · PROPERTY OVERVIEW ==============
+     Different motion language from the snapshot above: the floor plan
+     enters FULL-BLEED (almost filling the viewport), then on scroll it
+     scales down + slides left into a docked card while the spec panel
+     reveals on the right. One continuous, scroll-driven movement.
+
+       p = 0   → plan is full-screen, centered, no text
+       p = 1   → plan is docked left, text panel composed in on right
+
+     `--p` (plan progress 0..1) and `--text-p` (text fade 0..1) are set
+     on the stage by JS. All visual interpolation lives in CSS so the
+     scroll listener stays cheap (one rAF, no layout reads). */
+  .overview-scroll{
+    position: relative;
+  }
+  .overview-stage-wrap{
+    position: relative;
+    /* Generous scroll length — entry, shrink, read. */
+    height: 260vh;
+  }
+  .overview-stage{
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    --p: 0;
+    --text-p: 0;
+  }
+
+  /* ---------- Persistent eyebrow at top of the stage ---------- */
+  .ov-topbar{
+    position: absolute;
+    top: clamp(24px, 4vh, 44px);
+    left: 0; right: 0;
+    padding: 0 clamp(40px, 5vw, 72px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .ov-eyebrow{
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .ov-eyebrow .rule{
+    width: 32px;
+    height: 1px;
+    background: var(--ink-4);
+  }
+  .ov-section-num{
+    font-size: 10px;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Floor plan — scroll-pinch from full-bleed to docked ----------
+     Anchored top:50% + translateY(-50%) for vertical centering. Width,
+     height and left are all linear interpolations between the full-bleed
+     state (p=0) and the docked state (p=1). --p is the eased plan-progress
+     set by JS on the stage. */
+  .ov-plan-wrap{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    /* Docked anchor: where the floor plan should sit when p=1.
+       Aligned with the inner content column's left padding so the
+       page composition holds together with the rest of the document. */
+    --dock-left: max(40px, calc((100vw - 1280px) / 2 + clamp(40px, 5vw, 72px)));
+    /* Docked size — roughly the left column of a two-column grid */
+    --dock-w: min(54vw, 620px);
+    --dock-h: 64vh;
+
+    /* Full-bleed state: nearly the full viewport, centered horizontally */
+    --full-w: 88vw;
+    --full-h: 76vh;
+    --full-left: calc((100vw - 88vw) / 2);  /* same as 6vw */
+
+    /* Linear lerp via --p (0..1, unitless). */
+    width:  calc(var(--full-w) * (1 - var(--p)) + var(--dock-w) * var(--p));
+    height: calc(var(--full-h) * (1 - var(--p)) + var(--dock-h) * var(--p));
+    left:   calc(var(--full-left) * (1 - var(--p)) + var(--dock-left) * var(--p));
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    will-change: width, height, left;
+  }
+  .ov-plan-frame{
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    border: 1px solid var(--rule);
+    /* As plan docks, the border tightens up; subtle but reads as
+       "moving into a frame". */
+    background: var(--placeholder);
+  }
+  .ov-plan-frame image-slot{
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .ov-plan-cap{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    /* Caption fades in as plan approaches docked — it's diegetic to
+       the docked state, not the hero state. */
+    opacity: var(--p);
+  }
+  .ov-plan-cap .label{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ov-plan-cap .label::before{
+    content: "";
+    width: 6px; height: 6px;
+    background: #A5402D;
+  }
+
+  /* ---------- Spec text — fades in once plan is mostly docked ---------- */
+  .ov-text{
+    position: absolute;
+    top: 50%;
+    right: max(40px, calc((100vw - 1280px) / 2 + clamp(40px, 5vw, 72px)));
+    width: min(38vw, 460px);
+    /* Soft drift-in: start 24px low at text-p=0, settle at 0 at text-p=1 */
+    transform: translateY(calc(-50% + (1 - var(--text-p)) * 24px));
+    opacity: var(--text-p);
+    /* Hide from screen readers / pointer when invisible — keeps the
+       hero state uncluttered. */
+    pointer-events: none;
+    will-change: opacity, transform;
+  }
+  .overview-stage[style*="--text-p: 1"] .ov-text,
+  .overview-stage [style*="--text-p"] .ov-text{
+    /* (no-op selector — kept to document intent; pointer-events
+       toggle below uses JS-set class instead) */
+  }
+  .overview-stage.text-on .ov-text{ pointer-events: auto; }
+
+  .ov-title{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(28px, 2.8vw, 40px);
+    line-height: 1.1;
+    color: var(--ink);
+    letter-spacing: -.005em;
+    margin: 0 0 clamp(24px, 3vh, 36px);
+    text-wrap: pretty;
+  }
+  .ov-title em{ font-style: italic; }
+  .ov-title .num{
+    font-family: var(--sans);
+    font-style: normal;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.015em;
+  }
+
+  /* Spec groups */
+  .ov-specs{
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 2vh, 24px);
+  }
+  .ov-group{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: clamp(14px, 2vh, 20px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .ov-group:last-child{
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .ov-group .gname{
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+
+  /* Form group: footprint + area pair */
+  .ov-form-figure{
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 4px;
+  }
+  .ov-form-figure .v{
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: clamp(36px, 4vw, 52px);
+    line-height: .92;
+    letter-spacing: -.025em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .ov-form-figure .v .unit{
+    font-size: .42em;
+    color: var(--ink-3);
+    letter-spacing: 0;
+    margin-left: 4px;
+  }
+  /* Footprint sits as a small supporting line BENEATH the hero figure
+     — area is the headline, footprint is the reference fact. */
+  .ov-form-figure .dims{
+    display: inline-flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 13px;
+    letter-spacing: .04em;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .ov-form-figure .dims .x{
+    color: var(--ink-4);
+    margin: 0 4px;
+  }
+  .ov-form-figure .dims .k{
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+
+  /* Areas / configuration rows */
+  .ov-rows{
+    display: flex;
+    flex-direction: column;
+  }
+  .ov-row{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--rule-2);
+  }
+  .ov-row:last-child{ border-bottom: none; }
+  .ov-row .k{
+    font-size: 13px;
+    color: var(--ink-3);
+    letter-spacing: .02em;
+  }
+  .ov-row .v{
+    font-size: 15px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  .ov-row .v .unit{
+    color: var(--ink-3);
+    font-size: .82em;
+    margin-left: 3px;
+  }
+  .ov-row .v em{
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ink-3);
+    font-size: .9em;
+    margin: 0 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    /* No scroll-pinched entry — plan stays docked, text always visible. */
+    .ov-plan-wrap{
+      width: var(--dock-w);
+      height: var(--dock-h);
+      left: var(--dock-left);
+    }
+    .ov-text{
+      opacity: 1;
+      transform: translateY(-50%);
+      pointer-events: auto;
+    }
+    .ov-plan-cap{ opacity: 1; }
+  }
+
+  /* Short viewports — keep the composition working without clipping. */
+  @media (max-height: 820px){
+    .ov-plan-wrap{
+      --full-h: 70vh;
+      --dock-h: 60vh;
+    }
+    .ov-title{ font-size: clamp(24px, 3.4vh, 34px); }
+    .ov-form-figure .v{ font-size: clamp(34px, 5vh, 46px); }
+  }
+
+  /* ============== SECTION 4 · QUALITY INCLUSIONS ============== */
+  .inclusions{
+    padding: clamp(96px, 12vh, 160px) clamp(40px, 5vw, 72px) clamp(96px, 12vh, 160px);
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .inclusions-head{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(40px, 6vw, 88px);
+    align-items: start;
+    margin-bottom: clamp(56px, 7vh, 88px);
+  }
+  .inclusions-eyebrow{
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .inclusions-eyebrow .rule{
+    width: 32px;
+    height: 1px;
+    background: var(--ink-4);
+  }
+  .inclusions-title{
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: clamp(34px, 3.6vw, 52px);
+    line-height: 1.05;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: -.015em;
+  }
+  .inclusions-title em{
+    font-family: var(--serif);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.32em;
+    line-height: .85;
+    letter-spacing: -.015em;
+  }
+  .inclusions-lead{
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  /* 3x3 grid of inclusion cards */
+  .inclusions-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* Subtle internal rules instead of card outlines — keeps the
+       editorial feel and lets the type carry the structure. */
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+  .incl-card{
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: clamp(28px, 3.5vh, 40px) clamp(24px, 2.4vw, 36px);
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    min-height: clamp(220px, 26vh, 280px);
+  }
+  .incl-card .num{
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    font-variant-numeric: tabular-nums;
+  }
+  .incl-card .cat{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(22px, 1.9vw, 28px);
+    line-height: 1.1;
+    color: var(--ink);
+    letter-spacing: -.005em;
+    margin: 0;
+  }
+  .incl-card ul{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .incl-card li{
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    padding-left: 16px;
+    position: relative;
+    letter-spacing: .005em;
+  }
+  .incl-card li::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 6px;
+    height: 1px;
+    background: var(--ink-4);
+  }
+
+  /* ----- Inclusions reveal -----
+     Apple-style scroll-triggered composition:
+       1. Eyebrow + title + lead drift up first (header.is-in)
+       2. Grid container scales in subtly (grid.is-in)
+       3. Cards stagger in row-by-row, left→right
+          (delays via --i index 0..8 set inline)
+     One-way: once revealed, stays revealed. Long cubic-bezier easing
+     matched to the rest of the page (.22, 1, .36, 1). */
+  .inclusions-eyebrow,
+  .inclusions-title,
+  .inclusions-lead{
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 1.1s cubic-bezier(.22, 1, .36, 1),
+      transform 1.1s cubic-bezier(.22, 1, .36, 1);
+    will-change: opacity, transform;
+  }
+  .inclusions-head.is-in .inclusions-eyebrow{ opacity: 1; transform: none; transition-delay: 0s; }
+  .inclusions-head.is-in .inclusions-title  { opacity: 1; transform: none; transition-delay: .08s; }
+  .inclusions-head.is-in .inclusions-lead   { opacity: 1; transform: none; transition-delay: .22s; }
+
+  .inclusions-grid{
+    /* Container itself eases in — gives the card stagger a stage to
+       arrive on, instead of popping over a hard border. */
+    opacity: 0;
+    transform: translateY(20px) scale(.992);
+    transform-origin: center top;
+    transition:
+      opacity 1.2s cubic-bezier(.22, 1, .36, 1),
+      transform 1.2s cubic-bezier(.22, 1, .36, 1);
+    will-change: opacity, transform;
+  }
+  .inclusions-grid.is-in{
+    opacity: 1;
+    transform: none;
+  }
+
+  .incl-card{
+    opacity: 0;
+    transform: translateY(36px);
+    transition:
+      opacity .95s cubic-bezier(.22, 1, .36, 1),
+      transform .95s cubic-bezier(.22, 1, .36, 1);
+    transition-delay: calc(var(--i, 0) * 0.07s + .15s);
+    will-change: opacity, transform;
+  }
+  .inclusions-grid.is-in .incl-card{
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Card internals reveal a beat after the card itself — gives the
+     numbered eyebrow, category name and bullets a sense of being
+     "set into" the card after it lands. Subtle, but it's the kind
+     of layered timing Apple uses on product spec pages. */
+  .incl-card .num,
+  .incl-card .cat,
+  .incl-card li{
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity .8s cubic-bezier(.22, 1, .36, 1),
+      transform .8s cubic-bezier(.22, 1, .36, 1);
+  }
+  .inclusions-grid.is-in .incl-card .num{
+    opacity: 1; transform: none;
+    transition-delay: calc(var(--i, 0) * 0.07s + .35s);
+  }
+  .inclusions-grid.is-in .incl-card .cat{
+    opacity: 1; transform: none;
+    transition-delay: calc(var(--i, 0) * 0.07s + .42s);
+  }
+  .inclusions-grid.is-in .incl-card li{
+    opacity: 1; transform: none;
+  }
+  .inclusions-grid.is-in .incl-card li:nth-child(1){ transition-delay: calc(var(--i, 0) * 0.07s + .50s); }
+  .inclusions-grid.is-in .incl-card li:nth-child(2){ transition-delay: calc(var(--i, 0) * 0.07s + .56s); }
+  .inclusions-grid.is-in .incl-card li:nth-child(3){ transition-delay: calc(var(--i, 0) * 0.07s + .62s); }
+  .inclusions-grid.is-in .incl-card li:nth-child(4){ transition-delay: calc(var(--i, 0) * 0.07s + .68s); }
+
+  @media (prefers-reduced-motion: reduce){
+    .inclusions-eyebrow,
+    .inclusions-title,
+    .inclusions-lead,
+    .inclusions-grid,
+    .incl-card,
+    .incl-card .num,
+    .incl-card .cat,
+    .incl-card li{
+      opacity: 1; transform: none; transition: none;
+    }
+  }
+
+  /* ============== Reveal ============== */
+  :root{
+    --reveal-ease: cubic-bezier(.2,.6,.2,1);
+  }
+  .hero .img-layer{
+    opacity: 0;
+    transform: scale(1.04);
+    transition: opacity 1.4s var(--reveal-ease), transform 2.4s var(--reveal-ease);
+  }
+  .hero-top, .hero-bottom > *, .scroll-hint{
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 1s var(--reveal-ease), transform 1s var(--reveal-ease);
+  }
+  body.ready .hero .img-layer{ opacity: 1; transform: scale(1); }
+  /* Arriving from the collection morph: the expanding image already covers
+     the viewport, so show the hero photo instantly — no fade-up from black,
+     no scale — so the handoff is seamless. Text still animates in. */
+  html.from-morph .hero .img-layer{ opacity: 1 !important; transform: none !important; transition: none !important; }
+  body.ready .hero-top         { opacity: 1; transform: none; transition-delay: .25s; }
+  body.ready .hero-bottom > *:nth-child(1){ opacity: 1; transform: none; transition-delay: .50s; }
+  body.ready .hero-bottom > *:nth-child(2){ opacity: 1; transform: none; transition-delay: .40s; }
+  body.ready .scroll-hint      { opacity: 1; transform: translateX(-50%); transition-delay: .90s; }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero .img-layer, .hero-top, .hero-bottom > *, .scroll-hint{
+      opacity:1; transform:none; transition:none;
+    }
+  }
+
+  /* ============== PACKAGE FEATURE (editorial title + image) ============== */
+  .package-feature{
+    padding: clamp(32px, 4vh, 56px) clamp(40px, 5vw, 72px) clamp(80px, 10vh, 120px);
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .pf-eyebrow{
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: clamp(32px, 4.5vh, 48px);
+  }
+  .pf-eyebrow .rule{
+    width: 32px;
+    height: 1px;
+    background: var(--ink-4);
+  }
+  /* Two-line editorial title — sans display + serif italic, line 2
+     indented like the reference. Sized smaller than the hero so it
+     reads as a section title, not a re-hero. */
+  .pf-title{
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: clamp(36px, 4.2vw, 62px);
+    line-height: 1.0;
+    letter-spacing: -.025em;
+    text-wrap: pretty;
+  }
+  .pf-title .line-1{
+    display: block;
+  }
+  .pf-title .line-2{
+    display: block;
+    font-family: var(--serif);
+    font-weight: 500;
+    font-style: normal;
+    font-size: 1.32em;
+    line-height: .9;
+    letter-spacing: -.02em;
+    margin-left: clamp(24px, 5vw, 80px);
+    color: var(--ink);
+  }
+
+  /* Body + image both anchored in the RIGHT column — like the reference. */
+  .pf-body{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(40px, 6vw, 88px);
+    margin-top: clamp(56px, 8vh, 104px);
+    align-items: start;
+  }
+  .pf-body .pf-right{
+    grid-column: 2 / 3;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(40px, 5vh, 64px);
+  }
+  .pf-body .pf-copy p{
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 56ch;
+    margin: 0;
+  }
+  .pf-body .pf-copy p + p{
+    margin-top: 14px;
+  }
+
+  /* Image lives inside the right column, sitting under the body copy. */
+  .pf-photo{
+    margin: 0;
+    padding: 0;
+    position: relative;
+  }
+  .pf-photo .pf-frame{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--placeholder);
+    /* --py same parallax variable used by .moments; set by the shared
+       scroll updater that targets [data-parallax]. */
+    --py: 0;
+  }
+  .pf-photo image-slot{
+    position: absolute;
+    left: 0;
+    top: -15%;
+    width: 100%;
+    height: 130%;
+    display: block;
+    transform: translate3d(0, calc(var(--py) * 60px), 0);
+    will-change: transform;
+  }
+  .pf-photo figcaption{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 14px;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .pf-photo figcaption .right{
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Reveal — drift-in on each piece */
+  .pf-eyebrow,
+  .pf-title .line-1,
+  .pf-title .line-2,
+  .pf-body .pf-copy p,
+  .pf-photo{
+    opacity: 0;
+    transform: translateY(36px);
+    transition:
+      opacity 1.6s cubic-bezier(.22, 1, .36, 1),
+      transform 1.6s cubic-bezier(.22, 1, .36, 1);
+    will-change: opacity, transform;
+  }
+  .pf-photo .pf-frame{
+    transform: scale(1.05);
+    transition: transform 2.1s cubic-bezier(.22, 1, .36, 1);
+    will-change: transform;
+  }
+  .package-feature.is-in .pf-eyebrow         { opacity: 1; transform: none; transition-delay: 0s; }
+  .package-feature.is-in .pf-title .line-1   { opacity: 1; transform: none; transition-delay: .2s; }
+  .package-feature.is-in .pf-title .line-2   { opacity: 1; transform: none; transition-delay: .42s; }
+  .package-feature.is-in .pf-body .pf-copy p:nth-child(1){ opacity: 1; transform: none; transition-delay: .68s; }
+  .package-feature.is-in .pf-body .pf-copy p:nth-child(2){ opacity: 1; transform: none; transition-delay: .9s; }
+  .package-feature.is-in .pf-photo           { opacity: 1; transform: none; transition-delay: .78s; }
+  .package-feature.is-in .pf-photo .pf-frame { transform: scale(1); }
+
+  @media (prefers-reduced-motion: reduce){
+    .pf-eyebrow,
+    .pf-title .line-1,
+    .pf-title .line-2,
+    .pf-body .pf-copy p,
+    .pf-photo,
+    .pf-photo .pf-frame{
+      opacity: 1; transform: none; transition: none;
+    }
+  }
+
+  /* ============== SECTION 5 · SIDE BY SIDE ============== */
+  .compare-section{
+    padding: clamp(96px, 12vh, 160px) clamp(40px, 5vw, 72px) clamp(96px, 12vh, 160px);
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .compare{
+    display:flex;
+    flex-direction:column;
+    width: 100%;
+    gap: clamp(40px, 5vh, 64px);
+  }
+  .compare-head{
+    display:grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(40px, 6vw, 88px);
+    align-items: start;
+  }
+  .compare-eyebrow{
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .compare-eyebrow .rule{
+    width: 32px;
+    height: 1px;
+    background: var(--ink-4);
+  }
+  .compare-title{
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: clamp(34px, 3.6vw, 52px);
+    line-height: 1.05;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: -.015em;
+  }
+  .compare-title em{
+    font-family: var(--serif);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.32em;
+    line-height: .85;
+    letter-spacing: -.015em;
+  }
+  .compare-lead{
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  table.matrix{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  table.matrix col.label-col{ width: 22%; }
+  table.matrix col.res-col{   width: 26%; }
+  table.matrix thead th{
+    text-align: left;
+    padding: clamp(18px, 2.6vh, 28px) 24px clamp(18px, 2.6vh, 28px) 0;
+    vertical-align: bottom;
+    border-bottom: 1px solid var(--ink);
+    position: sticky;
+    top: 64px; /* below fixed topbar */
+    background: var(--bg);
+    z-index: 5;
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+  table.matrix thead th.empty{ border-bottom: 1px solid var(--ink); }
+  table.matrix thead th .col-name{
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(24px, 3vh, 32px);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -.005em;
+    margin-bottom: 10px;
+  }
+  table.matrix thead th .col-loc{
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  /* Highlight the column for the package currently being viewed —
+     just a gold underline on the th and a subtle row tint on cells. */
+  table.matrix thead th.is-this .col-name{
+    color: var(--ink);
+  }
+  table.matrix thead th.is-this::after{
+    content: "";
+    position: absolute;
+    left: 0; right: 16px; bottom: -1px;
+    height: 2px;
+    background: #A5402D;
+  }
+
+  table.matrix tbody td{
+    padding: clamp(12px, 1.8vh, 18px) 24px clamp(12px, 1.8vh, 18px) 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+    color: var(--ink);
+    vertical-align: middle;
+    font-variant-numeric: tabular-nums;
+  }
+  table.matrix tbody td.row-label{
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+    font-variant-numeric: normal;
+  }
+  table.matrix tbody td.muted{ color: var(--ink-2); font-variant-numeric: normal; }
+  table.matrix tbody td.is-this{
+    color: var(--ink);
+    background: rgba(255, 255, 255, .04);
+  }
+  table.matrix tbody tr:not(.section-row) td{
+    transition: background-color .2s ease, color .2s ease;
+  }
+  table.matrix tbody tr:not(.section-row):hover td{
+    background-color: rgba(255, 255, 255, .035);
+  }
+  table.matrix tbody tr:not(.section-row):hover td.is-this{
+    background-color: rgba(255, 255, 255, .075);
+  }
+  table.matrix tbody tr:not(.section-row):hover td.row-label,
+  table.matrix tbody tr:not(.section-row):hover td.muted{
+    color: var(--ink);
+  }
+  table.matrix tbody tr.section-row td{
+    padding-top: clamp(32px, 4vh, 44px);
+    padding-bottom: clamp(10px, 1.4vh, 14px);
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--sans);
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: .005em;
+    color: var(--ink);
+    background: transparent !important;
+  }
+  table.matrix tbody tr.section-row:first-child td{
+    padding-top: clamp(10px, 1.2vh, 14px);
+  }
+
+  .compare-actions{
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(16px, 3vh, 32px);
+  }
+  .btn-primary{
+    appearance: none;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    padding: 18px 36px;
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .btn-primary:hover{
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .tnum{ font-variant-numeric: tabular-nums; }
+
+  /* Compare reveal animations — mirrors inclusions timing */
+  .compare-head .compare-eyebrow,
+  .compare-head .compare-title,
+  .compare-head .compare-lead{
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 1.1s cubic-bezier(.22, 1, .36, 1),
+      transform 1.1s cubic-bezier(.22, 1, .36, 1);
+    will-change: opacity, transform;
+  }
+  .compare-head.is-in .compare-eyebrow{ opacity: 1; transform: none; transition-delay: 0s; }
+  .compare-head.is-in .compare-title  { opacity: 1; transform: none; transition-delay: .08s; }
+  .compare-head.is-in .compare-lead   { opacity: 1; transform: none; transition-delay: .22s; }
+
+  table.matrix thead th,
+  table.matrix tbody tr{
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity .55s cubic-bezier(.22, 1, .36, 1),
+      transform .55s cubic-bezier(.22, 1, .36, 1);
+  }
+  table.matrix.is-in thead th,
+  table.matrix.is-in tbody tr{ opacity: 1; transform: none; }
+  table.matrix.is-in thead th:nth-child(1){ transition-delay: .05s; }
+  table.matrix.is-in thead th:nth-child(2){ transition-delay: .11s; }
+  table.matrix.is-in thead th:nth-child(3){ transition-delay: .17s; }
+  table.matrix.is-in thead th:nth-child(4){ transition-delay: .23s; }
+  table.matrix.is-in tbody tr:nth-child(1){ transition-delay: .20s; }
+  table.matrix.is-in tbody tr:nth-child(2){ transition-delay: .26s; }
+  table.matrix.is-in tbody tr:nth-child(3){ transition-delay: .32s; }
+  table.matrix.is-in tbody tr:nth-child(4){ transition-delay: .38s; }
+  table.matrix.is-in tbody tr:nth-child(5){ transition-delay: .44s; }
+  table.matrix.is-in tbody tr:nth-child(6){ transition-delay: .50s; }
+  table.matrix.is-in tbody tr:nth-child(7){ transition-delay: .56s; }
+  table.matrix.is-in tbody tr:nth-child(8){ transition-delay: .62s; }
+  table.matrix.is-in tbody tr:nth-child(n+9){ transition-delay: .68s; }
+
+  .compare-actions{
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity .8s cubic-bezier(.22, 1, .36, 1),
+      transform .8s cubic-bezier(.22, 1, .36, 1);
+  }
+  .compare-actions.is-in{ opacity: 1; transform: none; transition-delay: .15s; }
+
+  @media (prefers-reduced-motion: reduce){
+    .compare-head .compare-eyebrow,
+    .compare-head .compare-title,
+    .compare-head .compare-lead,
+    table.matrix thead th,
+    table.matrix tbody tr,
+    .compare-actions{
+      opacity: 1; transform: none; transition: none;
+    }
+  }
+
+  /* ============== SECTION 6 · OTHER PACKAGES ============== */
+  .others{
+    padding: clamp(96px, 12vh, 160px) clamp(40px, 5vw, 72px) clamp(96px, 12vh, 160px);
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .others-head{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(40px, 6vw, 88px);
+    align-items: start;
+    margin-bottom: clamp(48px, 6vh, 72px);
+  }
+  .others-eyebrow{
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .others-eyebrow .rule{
+    width: 32px;
+    height: 1px;
+    background: var(--ink-4);
+  }
+  .others-title{
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: clamp(34px, 3.6vw, 52px);
+    line-height: 1.05;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: -.015em;
+  }
+  .others-title em{
+    font-family: var(--serif);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.32em;
+    line-height: .85;
+    letter-spacing: -.015em;
+  }
+  .others-lead{
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 56ch;
+    margin: 0;
+  }
+
+  /* Two-up card grid */
+  .others-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(24px, 3vw, 40px);
+  }
+  .other-card{
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .other-card .photo{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--placeholder);
+    margin-bottom: clamp(20px, 2.4vh, 32px);
+  }
+  .other-card .photo image-slot{
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .other-card .photo .num-badge{
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 2;
+    padding: 6px 12px;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .other-card .head{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+  .other-card .name{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(32px, 3vw, 44px);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -.005em;
+    margin: 0;
+  }
+  .other-card .loc{
+    font-size: 11px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    white-space: nowrap;
+  }
+  .other-card .lot{
+    font-size: 13px;
+    color: var(--ink-2);
+    margin: 0 0 clamp(20px, 2.6vh, 28px);
+    letter-spacing: .005em;
+  }
+  .other-card .lot em{
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ink-3);
+    margin: 0 4px;
+  }
+
+  /* Specs row inside card */
+  .other-card .quick{
+    display: flex;
+    align-items: center;
+    gap: clamp(18px, 2vw, 28px);
+    padding: clamp(16px, 2vh, 22px) 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .other-card .quick .item{
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .other-card .quick .item .k{
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .other-card .quick .item .v{ color: var(--ink); }
+  .other-card .quick .item .unit{
+    color: var(--ink-3);
+    font-size: .85em;
+    margin-left: 2px;
+  }
+
+  /* Foot: price + CTA */
+  .other-card .foot{
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: clamp(20px, 2.6vh, 28px);
+  }
+  .other-card .price-stack{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .other-card .price-stack .lab{
+    font-size: 10px;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+  .other-card .price-stack .v{
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: clamp(28px, 2.6vw, 36px);
+    line-height: 1;
+    letter-spacing: -.02em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .other-card .explore{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-weight: 500;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--ink);
+    transition: gap .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .other-card:hover .explore{
+    gap: 14px;
+  }
+  .other-card .explore .arrow{
+    display: inline-block;
+    transition: transform .3s ease;
+  }
+  .other-card:hover .explore .arrow{
+    transform: translateX(3px);
+  }
+  .other-card:hover .name{
+    color: var(--ink);
+  }
+  .other-card .photo::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid transparent;
+    transition: border-color .25s ease;
+    pointer-events: none;
+  }
+  .other-card:hover .photo::after{
+    border-color: rgba(242, 240, 236, .15);
+  }
+
+  /* Reveal animations — mirrors the other sections */
+  .others-eyebrow,
+  .others-title,
+  .others-lead{
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 1.1s cubic-bezier(.22, 1, .36, 1),
+      transform 1.1s cubic-bezier(.22, 1, .36, 1);
+    will-change: opacity, transform;
+  }
+  .others-head.is-in .others-eyebrow{ opacity: 1; transform: none; transition-delay: 0s; }
+  .others-head.is-in .others-title  { opacity: 1; transform: none; transition-delay: .08s; }
+  .others-head.is-in .others-lead   { opacity: 1; transform: none; transition-delay: .22s; }
+
+  .other-card{
+    opacity: 0;
+    transform: translateY(36px);
+    transition:
+      opacity .95s cubic-bezier(.22, 1, .36, 1),
+      transform .95s cubic-bezier(.22, 1, .36, 1);
+    transition-delay: calc(var(--i, 0) * 0.12s + .15s);
+    will-change: opacity, transform;
+  }
+  .others-grid.is-in .other-card{
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .others-eyebrow,
+    .others-title,
+    .others-lead,
+    .other-card{
+      opacity: 1; transform: none; transition: none;
+    }
+  }
+</style>
+<script>
+  /* Flag arrival from the collection page's morph transition BEFORE first
+     paint so the hero photo renders immediately (see html.from-morph CSS). */
+  if (location.hash === '#from-collection') document.documentElement.classList.add('from-morph');
+</script>
+</head>
+<body>
+
+<!-- ============== Top Bar ============== -->
+<header class="topbar" id="topbar" data-screen-label="Top Bar">
+  <div class="left">
+    <div class="logo-slot" aria-label="Hoyst">
+      <img src="assets/hoyst-logo.png" alt="Hoyst">
+    </div>
+    <a href="Hoyst Curated Collection.html#skip-loader" class="back-link">
+      <span class="arrow">←</span>
+      <span style="font-size: 12px">Back to collection</span>
+    </a>
+  </div>
+  <div class="right">
+    <span class="client-tag" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Private collection · <b>Sarah Chen</b></span>
+  </div>
+</header>
+
+<!-- ============== HERO ============== -->
+<section class="hero" data-screen-label="Hero">
+  <div class="img-layer">
+    <img class="hero-photo" src="assets/hero-exterior-2.png" alt="The Aspire — façade render">
+  </div>
+
+  <div class="overlay">
+    <!-- top-left: eyebrow + huge sans display -->
+    <div class="hero-top">
+      <span class="hero-eyebrow">
+<span style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">No. 01 · Curated for Sarah</span>
+      </span>
+      <h1 class="hero-display-sans">The Aspire</h1>
+    </div>
+
+    <!-- bottom row: meta left, huge serif right -->
+    <div class="hero-bottom">
+      <div class="hero-meta">
+        <p class="hero-tagline">A quiet four-bedroom on a <em>deep northern</em> block.</p>
+        <div class="crumb">
+          <span class="place" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Cloverton, Victoria</span>
+          <span class="sub" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">House &amp; land · Built by Mirastone</span>
+        </div>
+      </div>
+      <div class="hero-display-serif">Cloverton</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint" aria-hidden="true">
+    <span>Scroll</span>
+    <span class="dot"></span>
+  </div>
+</section>
+
+<!-- ============== DETAILS (below hero) ============== -->
+<section class="details" data-screen-label="Details">
+  <div class="at-a-glance">
+    <div class="price-block">
+      <div class="ptype" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Fixed price · House &amp; land</div>
+      <div class="total">$660,500</div>
+      <div class="breakdown">
+        <span style="font-size: 12px"><span class="lab" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Land</span>$295,000</span>
+        <span class="dot"></span>
+        <span style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px"><span class="lab">Build</span>$365,500</span>
+      </div>
+      <div class="validity" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Fixed until June 2027</div>
+    </div>
+
+    <div class="key-specs">
+      <div class="config-row">
+        <div class="config" aria-label="4 bedrooms">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17v-4a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v4M3 17v3M21 17v3M3 13h18"/></svg>
+          <span class="v">4</span><span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Bed</span>
+        </div>
+        <div class="config" aria-label="2 bathrooms">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-3zM6 12V7a2.5 2.5 0 0 1 5 0M9 7h3M6 19v2M18 19v2"/></svg>
+          <span class="v">2</span><span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Bath</span>
+        </div>
+        <div class="config" aria-label="2 car spaces">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 16v-3l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5v3M3 16h18M3 16v3h3v-3M21 16v3h-3v-3M7 13h10"/></svg>
+          <span class="v">2</span><span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Car</span>
+        </div>
+      </div>
+
+      <div class="spec-grid">
+        <div class="cell">
+          <span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Land size</span>
+          <span class="v">400<span class="unit">m²</span></span>
+        </div>
+        <div class="cell">
+          <span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">House size</span>
+          <span class="v">22.4<span class="unit">sq</span></span>
+        </div>
+        <div class="cell">
+          <span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Title by</span>
+          <span class="v">Dec<span class="unit">2026</span></span>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <button class="btn" type="button">Hold this lot</button>
+        <button class="btn ghost" type="button">Speak to a Build Advocate</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== PACKAGE FEATURE (editorial poster) ============== -->
+<section class="package-feature" data-screen-label="The Package">
+  <div class="pf-eyebrow">
+    <span style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Lot 47 · Aspire 22 · Cloverton LHS</span>
+  </div>
+  <h2 class="pf-title">
+    <span class="line-1">Set back from the street,</span>
+    <span class="line-2">open to the north.</span>
+  </h2>
+
+  <div class="pf-body">
+    <div class="pf-right">
+      <div class="pf-copy">
+        <p>A long, low form drawn back from the kerb to make room for a deep northern garden. The plan is pulled apart in the middle so light reaches the living edge from two sides &mdash; morning sun in the kitchen, late afternoon over the lounge.</p>
+        <p>Quiet to live in, easy to keep, and built to hold its value as the estate matures around it.</p>
+      </div>
+      <figure class="pf-photo">
+        <div class="pf-frame" data-parallax>
+          <image-slot id="pkg-aerial" shape="rect" placeholder="The Aspire — aerial / lifestyle"></image-slot>
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 2 · INVESTMENT SNAPSHOT ============== -->
+<section class="snapshot-scroll" data-screen-label="Investment Snapshot">
+  <div class="snapshot-stage-wrap">
+    <div class="snapshot-stage">
+      <!-- STATE A composition: just this block, centered in the stage. -->
+      <div class="snap-title-block">
+        <div class="snapshot-eyebrow"><span style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Investment snapshot</span></div>
+
+        <p class="snapshot-sentence">
+          Five years out, the <em>Aspire</em> is projected at
+          <span class="num"><span class="approx">~</span>$935K</span>
+          &mdash; about +42% over today.
+        </p>
+      </div>
+
+      <!-- STATE B composition: everything below the title appears once
+           the stage crosses its trigger. -->
+      <div class="snap-below">
+        <div class="snapshot-chart-area">
+        <div class="hero-chart">
+          <div class="bars" aria-hidden="true">
+            <div class="bar is-now" style="height: 70.6%;">
+              <span class="pop">$660K</span>
+              <span class="tip"><span class="year">'26 · today</span><span class="value">$660K</span></span>
+            </div>
+            <div class="bar" style="height: 75.4%;">
+              <span class="tip"><span class="year">'27</span><span class="value">~$705K</span></span>
+            </div>
+            <div class="bar" style="height: 81.3%;">
+              <span class="tip"><span class="year">'28</span><span class="value">~$760K</span></span>
+            </div>
+            <div class="bar" style="height: 87.2%;">
+              <span class="tip"><span class="year">'29</span><span class="value">~$815K</span></span>
+            </div>
+            <div class="bar" style="height: 93.6%;">
+              <span class="tip"><span class="year">'30</span><span class="value">~$875K</span></span>
+            </div>
+            <div class="bar is-end" style="height: 100%;">
+              <span class="pop">$935K</span>
+              <span class="tip"><span class="year">'31 · year five</span><span class="value">~$935K</span></span>
+            </div>
+          </div>
+          <div class="axis" style="border-width: 0px; padding: 0px">
+            <span>'26</span><span>'27</span><span>'28</span>
+            <span>'29</span><span>'30</span><span>'31</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="snap-strip">
+        <div class="cell">
+          <span class="lab" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Est. rental return</span>
+          <span class="val"><span class="approx">~</span>$540<span class="unit">/ wk</span></span>
+          <span class="qual" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Gross · new tenancy</span>
+        </div>
+        <div class="cell">
+          <span class="lab" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Est. rental yield</span>
+          <span class="val"><span class="approx">~</span>3.8<span class="unit">% p.a.</span></span>
+          <span class="qual" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Gross yield · estimate</span>
+        </div>
+        <div class="cell">
+          <span class="lab" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">5-yr capital growth</span>
+          <span class="val"><span class="approx">~</span>26<span class="unit">% cum.</span></span>
+          <span class="qual" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Cumulative · estimate</span>
+        </div>
+        <div class="cell">
+          <span class="lab" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Likely ROI</span>
+          <span class="val"><span class="range">6.8&ndash;8.4</span><span class="unit">% p.a.</span></span>
+          <span class="qual" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Indicative range</span>
+        </div>
+      </div>
+
+      <div class="snapshot-foot" style="border-width: 0px">
+        <p class="disclaimer">Figures are indicative only, prepared by Hoyst from market comparables, rental data and forward growth assumptions. Final returns depend on market conditions, tenant placement and your finance structure. Not financial advice.</p>
+        <span class="prepared">Prepared 26 May 2026 · Adam Mercer</span>
+      </div>
+      </div><!-- /.snap-below -->
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 2.5 · LIFESTYLE MOMENTS ============== -->
+<section class="moments" data-screen-label="Lifestyle moments">
+  <div class="moments-grid">
+    <div class="moment">
+      <span class="cap">Interior · Living edge</span>
+      <image-slot id="moment-interior" shape="rect" placeholder="Interior — living moment"></image-slot>
+    </div>
+    <div class="moment">
+      <span class="cap">Estate · Common area</span>
+      <image-slot id="moment-estate" shape="rect" placeholder="Estate — common area"></image-slot>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 3 · PROPERTY OVERVIEW ============== -->
+<section class="overview-scroll" data-screen-label="Property Overview">
+  <div class="overview-stage-wrap">
+    <div class="overview-stage" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">
+
+      <!-- Persistent eyebrow — gives the section identity from the
+           first frame, sits above the floor plan in either state. -->
+      <div class="ov-topbar">
+        <span class="ov-eyebrow">
+<span>Property overview</span>
+        </span>
+      </div>
+
+      <!-- Floor plan: full-bleed on entry, pinches into the docked
+           card as the user scrolls. Position/size driven entirely by
+           --p on the parent stage. -->
+      <div class="ov-plan-wrap">
+        <div class="ov-plan-frame">
+          <image-slot
+            id="aspire-floorplan"
+            shape="rect"
+            placeholder="Floor plan · all rooms labelled with mm dimensions"></image-slot>
+        </div>
+        <div class="ov-plan-cap">
+          <span class="label">Aspire 22 · Lisbon LHS · floor plan</span>
+        </div>
+      </div>
+
+      <!-- Spec panel: invisible during full-bleed phase, composes in
+           once plan is mostly docked. -->
+      <div class="ov-text">
+        <div class="ov-specs">
+          <div class="ov-group">
+            <span class="gname">Form</span>
+            <div class="ov-form-figure">
+              <span class="v">156<span class="unit">m²</span></span>
+            </div>
+            <div class="ov-rows">
+              <div class="ov-row">
+                <span class="k" style="font-family: Inter">Footprint</span>
+                <span class="v" style="font-family: Inter">14.8 <em>×</em> 10.5<span class="unit">m</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ov-group">
+            <span class="gname">Internal areas</span>
+            <div class="ov-rows">
+              <div class="ov-row">
+                <span class="k" style="font-family: Inter">Ground floor</span>
+                <span class="v" style="font-family: Inter">116<span class="unit">m²</span></span>
+              </div>
+              <div class="ov-row">
+                <span class="k" style="font-family: Inter">Garage</span>
+                <span class="v" style="font-family: Inter">36<span class="unit">m²</span></span>
+              </div>
+              <div class="ov-row">
+                <span class="k" style="font-family: Inter">Porch</span>
+                <span class="v" style="font-family: Inter">3.7<span class="unit">m²</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ov-group">
+            <span class="gname">Configuration</span>
+            <div class="ov-rows">
+              <div class="ov-row">
+                <span class="k" style="font-family: Inter">Dwelling type</span>
+                <span class="v" style="font-family: Inter">Freestanding <em>·</em> Single storey</span>
+              </div>
+              <div class="ov-row">
+                <span class="k" style="font-family: Inter">Living areas</span>
+                <span class="v" style="font-family: Inter">2 <em>·</em> Lounge + Family/Meals</span>
+              </div>
+              <div class="ov-row">
+                <span class="k" style="font-family: Inter">Facade</span>
+                <span class="v" style="font-family: Inter">Lisbon LHS</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 4 · QUALITY INCLUSIONS ============== -->
+<section class="inclusions" data-screen-label="Quality Inclusions">
+  <div class="inclusions-head">
+    <div>
+      <div class="inclusions-eyebrow">
+<span style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Quality inclusions</span>
+      </div>
+      <h2 class="inclusions-title">What's <em>included</em> as standard.</h2>
+    </div>
+    <div>
+      <p class="inclusions-lead">The Aspire is delivered turn-key. Every fixture, finish and system below is part of the fixed price — no upgrade tiers, no surprise allowances. Specifications follow Mirastone's standard inclusions for the Cloverton release.</p>
+    </div>
+  </div>
+
+  <div class="inclusions-grid">
+
+    <div class="incl-card" style="--i:0">
+      <span class="num" style="margin: 0px 0px -5px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">01</span>
+      <h3 class="cat">Kitchen</h3>
+      <ul>
+        <li>40 mm reconstituted stone benchtop</li>
+        <li>900 mm oven, cooktop &amp; rangehood</li>
+        <li>Dishwasher included</li>
+        <li>Sink type, tap and splashback</li>
+      </ul>
+    </div>
+
+    <div class="incl-card" style="--i:1">
+      <span class="num" style="margin: 0px 0px -8px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">02</span>
+      <h3 class="cat">Bathroom &amp; Ensuite</h3>
+      <ul>
+        <li>Stone / laminate vanity benchtop</li>
+        <li>Freestanding bath, 1500 mm</li>
+        <li>Shower screen type and height</li>
+        <li>Tapware finish and accessories</li>
+      </ul>
+    </div>
+
+    <div class="incl-card" style="--i:2">
+      <span class="num" style="margin: 0px 0px -8px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">03</span>
+      <h3 class="cat">Climate &amp; Heating</h3>
+      <ul>
+        <li>Heating system type and zones</li>
+        <li>Cooling system type and zones</li>
+        <li>Hot water system type</li>
+        <li>Ceiling height 2590 mm</li>
+      </ul>
+    </div>
+
+    <div class="incl-card" style="--i:3">
+      <span class="num" style="margin: 0px 0px -8px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 6px">04</span>
+      <h3 class="cat">Solar &amp; Energy</h3>
+      <ul>
+        <li>Solar PV system 6.6 kW</li>
+        <li>7-star NatHERS energy rating</li>
+        <li>Window glazing type</li>
+        <li>Insulation specification</li>
+      </ul>
+    </div>
+
+    <div class="incl-card" style="--i:4">
+      <span class="num" style="margin: 0px 0px -8px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">05</span>
+      <h3 class="cat">Flooring</h3>
+      <ul>
+        <li>Laminate to living areas</li>
+        <li>Carpet to bedrooms (product/spec)</li>
+        <li>Tiles to wet areas and laundry</li>
+        <li>Product / brand name if stated</li>
+      </ul>
+    </div>
+
+    <div class="incl-card" style="--i:5">
+      <span class="num" style="margin: 0px 0px -8px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">06</span>
+      <h3 class="cat">External &amp; Landscaping</h3>
+      <ul>
+        <li>Fencing height and material</li>
+        <li>Landscaping front and rear</li>
+        <li>Driveway type</li>
+        <li>Letterbox and clothesline</li>
+      </ul>
+    </div>
+
+    <div class="incl-card" style="--i:6">
+      <span class="num" style="margin: 0px 0px -8px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">07</span>
+      <h3 class="cat">Garage &amp; Outdoor</h3>
+      <ul>
+        <li>Colorbond garage door, motorised</li>
+        <li>2 remote controls included</li>
+        <li>Concrete perimeter and paths</li>
+        <li>Wing fence / side gate</li>
+      </ul>
+    </div>
+
+    <div class="incl-card" style="--i:7">
+      <span class="num" style="margin: 0px 0px -8px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">08</span>
+      <h3 class="cat">Electrical &amp; NBN</h3>
+      <ul>
+        <li>LED downlights (type and zones)</li>
+        <li>NBN readiness status</li>
+        <li>TV and data points (rooms)</li>
+        <li>Smoke detectors and safety switch</li>
+      </ul>
+    </div>
+
+    <div class="incl-card" style="--i:8">
+      <span class="num" style="margin: 0px 0px -8px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">09</span>
+      <h3 class="cat">Joinery &amp; Storage</h3>
+      <ul>
+        <li>Window coverings type and brand</li>
+        <li>Fly screens on all openable windows</li>
+        <li>Robe and WIR shelving specification</li>
+        <li>Door heights and hardware finish</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============== SECTION 5 · SIDE BY SIDE ============== -->
+<section class="compare-section" data-screen-label="Side by side">
+  <div class="compare">
+    <div class="compare-head">
+      <div>
+        <div class="compare-eyebrow">
+<span style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Section 05 · The shortlist</span>
+        </div>
+        <h2 class="compare-title">Side by <em>side</em>.</h2>
+      </div>
+    </div>
+
+    <table class="matrix">
+      <colgroup>
+        <col class="label-col">
+        <col class="res-col">
+        <col class="res-col">
+        <col class="res-col">
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="empty"></th>
+          <th class="is-this">
+            <div class="col-name">The Aspire</div>
+            <div class="col-loc">Cloverton, VIC</div>
+          </th>
+          <th>
+            <div class="col-name">The Horizon</div>
+            <div class="col-loc">Aurora, VIC</div>
+          </th>
+          <th>
+            <div class="col-name">The Vista</div>
+            <div class="col-loc">Bloomdale, VIC</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="section-row">
+          <td colspan="4">Financials</td>
+        </tr>
+        <tr>
+          <td class="row-label">Total package price</td>
+          <td class="is-this">$660,500</td>
+          <td>$684,000</td>
+          <td>$720,500</td>
+        </tr>
+        <tr>
+          <td class="row-label">Land price</td>
+          <td class="is-this">$295,000</td>
+          <td>$328,300</td>
+          <td>$324,200</td>
+        </tr>
+        <tr>
+          <td class="row-label">Build price</td>
+          <td class="is-this">$365,500</td>
+          <td>$355,700</td>
+          <td>$396,300</td>
+        </tr>
+        <tr>
+          <td class="row-label">Estimated rental return</td>
+          <td class="is-this">~$595–$615 / wk</td>
+          <td>~$670–$690 / wk</td>
+          <td>~$760–$785 / wk</td>
+        </tr>
+        <tr>
+          <td class="row-label">Estimated rental yield</td>
+          <td class="is-this">~4.8%</td>
+          <td>~5.2%</td>
+          <td>~5.6%</td>
+        </tr>
+        <tr>
+          <td class="row-label">Likely ROI (indicative)</td>
+          <td class="is-this">10.0–11.5% p.a.</td>
+          <td>11.5–13.0% p.a.</td>
+          <td>10.5–12.0% p.a.</td>
+        </tr>
+        <tr>
+          <td class="row-label">Est. 5-yr capital growth</td>
+          <td class="is-this">~$231,700</td>
+          <td>~$293,200</td>
+          <td>~$234,700</td>
+        </tr>
+        <tr>
+          <td class="row-label">Projected 5-yr value</td>
+          <td class="is-this">~$892,000</td>
+          <td>~$977,000</td>
+          <td>~$955,000</td>
+        </tr>
+
+        <tr class="section-row">
+          <td colspan="4">Property</td>
+        </tr>
+        <tr>
+          <td class="row-label">Location</td>
+          <td class="muted is-this">Cloverton, VIC</td>
+          <td class="muted">Aurora, VIC</td>
+          <td class="muted">Bloomdale, VIC</td>
+        </tr>
+        <tr>
+          <td class="row-label">Market type</td>
+          <td class="muted is-this">Melbourne north growth corridor</td>
+          <td class="muted">Melbourne north growth corridor</td>
+          <td class="muted">Melbourne north-west growth corridor</td>
+        </tr>
+        <tr>
+          <td class="row-label">Beds / Baths / Garage</td>
+          <td class="is-this">4 · 2 · 2</td>
+          <td>4 · 2 · 2</td>
+          <td>4 · 2 · 2</td>
+        </tr>
+        <tr>
+          <td class="row-label">Land size</td>
+          <td class="is-this">400 m²</td>
+          <td>448 m²</td>
+          <td>512 m²</td>
+        </tr>
+        <tr>
+          <td class="row-label">House size</td>
+          <td class="is-this">184 m² (19.8 sq)</td>
+          <td>196 m² (21.1 sq)</td>
+          <td>215 m² (23.1 sq)</td>
+        </tr>
+        <tr>
+          <td class="row-label">Title / registration</td>
+          <td class="muted is-this">Dec 2026</td>
+          <td class="muted">Oct 2026</td>
+          <td class="muted">Mar 2027</td>
+        </tr>
+
+        <tr class="section-row">
+          <td colspan="4">Trust &amp; builder</td>
+        </tr>
+        <tr>
+          <td class="row-label">City vacancy rate</td>
+          <td class="is-this">2.2% (Melbourne)</td>
+          <td>2.2% (Melbourne)</td>
+          <td>2.2% (Melbourne)</td>
+        </tr>
+        <tr>
+          <td class="row-label">Infrastructure pipeline</td>
+          <td class="muted is-this">Hume Fwy upgrade · Donnybrook Station precinct</td>
+          <td class="muted">Mernda rail extension · Edgars Rd connector</td>
+          <td class="muted">Bulla Bypass · Sunbury rail upgrade</td>
+        </tr>
+        <tr>
+          <td class="row-label">Builder</td>
+          <td class="muted is-this">Mirastone</td>
+          <td class="muted">Mirastone</td>
+          <td class="muted">AHB Homes</td>
+        </tr>
+        <tr>
+          <td class="row-label">Structural warranty</td>
+          <td class="is-this">25 years</td>
+          <td>25 years</td>
+          <td>25 years</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="compare-actions">
+      <button class="btn-primary" type="button">Book a conversation with Adam</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============== SECTION 6 · OTHER PACKAGES ============== -->
+<section class="others" data-screen-label="Other packages">
+  <div class="others-head">
+    <div>
+      <div class="others-eyebrow">
+<span style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Section 06 · The other two</span>
+      </div>
+      <h2 class="others-title">Also in Sarah's <em>curation</em>.</h2>
+    </div>
+  </div>
+
+  <div class="others-grid">
+
+    <!-- Package 02 — The Horizon -->
+    <a href="#" class="other-card" style="--i:0" data-screen-label="Other · The Horizon">
+      <div class="photo">
+        <span class="num-badge" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Package 02 of 03</span>
+        <image-slot id="other-horizon" shape="rect" placeholder="The Horizon — exterior"></image-slot>
+      </div>
+      <div class="head">
+        <h3 class="name">The Horizon</h3>
+        <span class="loc" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Aurora, VIC</span>
+      </div>
+      <p class="lot">Lot 12 <em>—</em> Horizon 24 · Aurora RHS</p>
+      <div class="quick">
+        <span class="item"><span class="v">4 · 2 · 2</span><span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Bed/Bath/Car</span></span>
+        <span class="item"><span class="v">448<span class="unit">m²</span></span><span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Land</span></span>
+        <span class="item"><span class="v">21.1<span class="unit">sq</span></span><span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">House</span></span>
+      </div>
+      <div class="foot">
+        <div class="price-stack">
+          <span class="lab" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Fixed price</span>
+          <span class="v">$684,000</span>
+        </div>
+        <span class="explore">
+          <span>Explore residence</span>
+          <span class="arrow">→</span>
+        </span>
+      </div>
+    </a>
+
+    <!-- Package 03 — The Vista -->
+    <a href="#" class="other-card" style="--i:1" data-screen-label="Other · The Vista">
+      <div class="photo">
+        <span class="num-badge" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Package 03 of 03</span>
+        <image-slot id="other-vista" shape="rect" placeholder="The Vista — exterior"></image-slot>
+      </div>
+      <div class="head">
+        <h3 class="name">The Vista</h3>
+        <span class="loc" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Bloomdale, VIC</span>
+      </div>
+      <p class="lot">Lot 28 <em>—</em> Vista 26 · Bloomdale</p>
+      <div class="quick">
+        <span class="item"><span class="v">4 · 2 · 2</span><span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Bed/Bath/Car</span></span>
+        <span class="item"><span class="v">512<span class="unit">m²</span></span><span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Land</span></span>
+        <span class="item"><span class="v">23.1<span class="unit">sq</span></span><span class="k" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">House</span></span>
+      </div>
+      <div class="foot">
+        <div class="price-stack">
+          <span class="lab" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Fixed price</span>
+          <span class="v">$720,500</span>
+        </div>
+        <span class="explore">
+          <span>Explore residence</span>
+          <span class="arrow">→</span>
+        </span>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<script>
+  // Topbar styling once user scrolls past hero edge
+  (function(){
+    const tb = document.getElementById('topbar');
+    function onScroll(){
+      if (window.scrollY > 24) tb.classList.add('scrolled');
+      else tb.classList.remove('scrolled');
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  })();
+
+  // ============== Investment Snapshot — sticky scroll-driven reveal ==============
+  // Word stagger for the sentence is triggered on first viewport entry
+  // (IO + .is-revealing). Chart bar growth + strip + disclaimer reveals
+  // are driven by CSS calc(clamp(...)) against the --p variable, which
+  // tracks scroll progress 0 → 1 through the stage-wrap. One rAF-throttled
+  // scroll listener handles both.
+  (function(){
+    const root = document.querySelector('.snapshot-scroll');
+    if (!root) return;
+    const wrap = root.querySelector('.snapshot-stage-wrap');
+    if (!wrap) return;
+
+    // --- Word-wrap the sentence for staggered entrance ---
+    const sentence = root.querySelector('.snapshot-sentence');
+    if (sentence && !sentence.dataset.wrapped) {
+      const walker = document.createTreeWalker(sentence, NodeFilter.SHOW_TEXT);
+      const textNodes = [];
+      let node;
+      while ((node = walker.nextNode())) textNodes.push(node);
+      let idx = 0;
+      textNodes.forEach(textNode => {
+        const parts = textNode.textContent.split(/(\s+)/);
+        const frag = document.createDocumentFragment();
+        parts.forEach(part => {
+          if (/\S/.test(part)) {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.style.setProperty('--i', idx++);
+            span.textContent = part;
+            frag.appendChild(span);
+          } else if (part.length) {
+            frag.appendChild(document.createTextNode(part));
+          }
+        });
+        textNode.parentNode.replaceChild(frag, textNode);
+      });
+      sentence.dataset.wrapped = '1';
+    }
+
+    // --- Reveal sentence words when the stage actually becomes sticky ---
+    // We defer the word stagger until the wrap's top reaches the
+    // viewport's top — at that moment the title is composed in the
+    // optical centre of the stage and the user is reading it. Triggering
+    // earlier (e.g. on first peek from the bottom) meant the animation
+    // had already finished by the time the user got there.
+    // Implementation lives inside update() below, gated by `revealed`.
+
+    // --- Scroll trigger → toggle .is-advanced on the stage ---
+    // Threshold is intentionally past the read-State-A zone so the
+    // sentence has time to land + breathe before composing into State B.
+    const stage = root.querySelector('.snapshot-stage');
+    const ADVANCE_AT = 0.28; // progress (0..1) at which State B triggers
+    let ticking = false;
+    let advanced = false;
+    let revealed = false;
+    function update(){
+      ticking = false;
+      if (!stage) return;
+      const rect = wrap.getBoundingClientRect();
+      const vh = window.innerHeight;
+
+      // Word stagger fires as soon as the wrap is close to the sticky
+      // position — not only after sticky actually engages. This way the
+      // sentence is already animating in while the browser is snapping
+      // the user into the frame, so by the time the snap settles the
+      // text reads as "already there" rather than starting from cold.
+      if (!revealed && rect.top <= vh * 0.4) {
+        root.classList.add('is-revealing');
+        revealed = true;
+      }
+
+      const total = wrap.offsetHeight - vh;
+      if (total <= 0) {
+        if (!advanced) { stage.classList.add('is-advanced'); advanced = true; }
+        return;
+      }
+      const scrolled = -rect.top;
+      const p = Math.max(0, Math.min(1, scrolled / total));
+      // Advance is one-way: once the title has composed into State B,
+      // it stays there forever. Re-entering the section from any
+      // direction shows the already-resolved frame, not a replay.
+      if (!advanced && p >= ADVANCE_AT) {
+        stage.classList.add('is-advanced');
+        advanced = true;
+      }
+    }
+    function onScroll(){
+      if (!ticking){
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', onScroll, {passive:true});
+    update();
+  })();
+
+  // ============== Lifestyle Moments — two-image reveal ==============
+  (function(){
+    const grid = document.querySelector('.moments-grid');
+    if (!grid) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      grid.classList.add('is-in');
+      return;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px 0px -18% 0px',
+      threshold: 0.01
+    });
+    io.observe(grid);
+  })();
+
+  // ============== Lifestyle Moments + Package Feature — parallax on scroll ==============
+  // For each parallax target, compute a -1..+1 progress based on how far
+  // its center is from the viewport center; CSS uses --py to translate
+  // the oversized image-slot within the (overflow:hidden) frame. One rAF
+  // per scroll tick, no layout reads during paint.
+  (function(){
+    const targets = Array.from(document.querySelectorAll(
+      '.moments-grid .moment, [data-parallax]'
+    ));
+    if (!targets.length) return;
+
+    let ticking = false;
+    function update(){
+      ticking = false;
+      const vh = window.innerHeight;
+      const vCenter = vh / 2;
+      targets.forEach(m => {
+        const rect = m.getBoundingClientRect();
+        const mCenter = rect.top + rect.height / 2;
+        // Distance from viewport center, normalized so ±(vh/2 + half-target)
+        // maps to ±1. Clamp so off-screen doesn't keep growing.
+        const range = (vh + rect.height) / 2;
+        const py = Math.max(-1, Math.min(1, (mCenter - vCenter) / range));
+        m.style.setProperty('--py', py.toFixed(3));
+      });
+    }
+    function onScroll(){
+      if (!ticking){
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onScroll, {passive: true});
+    update();
+  })();
+
+  // ============== Property Overview — scroll-pinched floor plan ==============
+  // The floor plan enters full-bleed and pinches into its docked card as
+  // the user scrolls. We just translate scroll progress into two CSS vars
+  // on the stage; all interpolation lives in CSS via calc(--p).
+  //
+  //   p mapping (overall section progress 0..1):
+  //     0 → 0.55  : floor plan shrinks from full to docked (--p: 0 → 1)
+  //     0.40 → 0.85 : spec text fades in (--text-p: 0 → 1)
+  //   Overlap is intentional — text begins composing in just before
+  //   the plan finishes docking, so the two motions feel braided.
+  (function(){
+    const root = document.querySelector('.overview-scroll');
+    if (!root) return;
+    const wrap = root.querySelector('.overview-stage-wrap');
+    const stage = root.querySelector('.overview-stage');
+    if (!wrap || !stage) return;
+
+    let ticking = false;
+
+    function easeInOutCubic(t){
+      return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+    }
+
+    function update(){
+      ticking = false;
+      const rect = wrap.getBoundingClientRect();
+      const vh = window.innerHeight;
+      const total = wrap.offsetHeight - vh;
+      if (total <= 0){
+        stage.style.setProperty('--p', '1');
+        stage.style.setProperty('--text-p', '1');
+        stage.classList.add('text-on');
+        return;
+      }
+      const scrolled = -rect.top;
+      const p = Math.max(0, Math.min(1, scrolled / total));
+
+      // Plan: shrink during first 55% of section.
+      const planRaw = Math.max(0, Math.min(1, p / 0.55));
+      const planEased = easeInOutCubic(planRaw);
+
+      // Text: fade from 40% → 85%.
+      const textRaw = Math.max(0, Math.min(1, (p - 0.40) / 0.45));
+      const textEased = easeInOutCubic(textRaw);
+
+      stage.style.setProperty('--p', planEased.toFixed(3));
+      stage.style.setProperty('--text-p', textEased.toFixed(3));
+
+      // Toggle pointer-events on text panel once it's mostly visible.
+      if (textEased > 0.5) stage.classList.add('text-on');
+      else stage.classList.remove('text-on');
+    }
+
+    function onScroll(){
+      if (!ticking){
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }
+    window.addEventListener('scroll', onScroll, {passive: true});
+    window.addEventListener('resize', onScroll, {passive: true});
+    update();
+  })();
+
+  // ============== Quality Inclusions — staggered reveal on entry ==============
+  // Apple-style: header composes first, then the grid container eases in,
+  // then cards stagger across the 3×3 (--i set inline 0..8), each card's
+  // internals (number, category, bullets) ease in a beat after the card
+  // lands. IntersectionObserver fires once per element with `rootMargin`
+  // pulling the trigger slightly before each piece reaches the viewport
+  // mid-line, so reveals feel like they're already underway when read.
+  (function(){
+    const head = document.querySelector('.inclusions-head');
+    const grid = document.querySelector('.inclusions-grid');
+    if (!head && !grid) return;
+
+    // If reduced motion is on, just mark everything in and bail.
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      if (head) head.classList.add('is-in');
+      if (grid) grid.classList.add('is-in');
+      return;
+    }
+
+    // Bail to immediate state if IO isn't available (very old browsers).
+    if (!('IntersectionObserver' in window)) {
+      if (head) head.classList.add('is-in');
+      if (grid) grid.classList.add('is-in');
+      return;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {
+      // Trigger when the element is ~18% into view from the bottom.
+      // Tight enough that the reveal feels timed to the user's read,
+      // loose enough that fast scrollers don't catch the cold state.
+      root: null,
+      rootMargin: '0px 0px -18% 0px',
+      threshold: 0.01
+    });
+
+    if (head) io.observe(head);
+    if (grid) io.observe(grid);
+  })();
+
+  // ============== Package Feature — title + body + photo reveal ==============
+  (function(){
+    const feat = document.querySelector('.package-feature');
+    if (!feat) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      feat.classList.add('is-in');
+      return;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px 0px -8% 0px',
+      threshold: 0.01
+    });
+
+    io.observe(feat);
+  })();
+
+  // ============== Side by Side — staggered reveal on entry ==============
+  (function(){
+    const head    = document.querySelector('.compare-head');
+    const table   = document.querySelector('.compare-section table.matrix');
+    const actions = document.querySelector('.compare-actions');
+    if (!head && !table && !actions) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      if (head)    head.classList.add('is-in');
+      if (table)   table.classList.add('is-in');
+      if (actions) actions.classList.add('is-in');
+      return;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px 0px -15% 0px',
+      threshold: 0.01
+    });
+
+    if (head)    io.observe(head);
+    if (table)   io.observe(table);
+    if (actions) io.observe(actions);
+  })();
+
+  // ============== Other Packages — staggered card reveal ==============
+  (function(){
+    const head = document.querySelector('.others-head');
+    const grid = document.querySelector('.others-grid');
+    if (!head && !grid) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      if (head) head.classList.add('is-in');
+      if (grid) grid.classList.add('is-in');
+      return;
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px 0px -15% 0px',
+      threshold: 0.01
+    });
+
+    if (head) io.observe(head);
+    if (grid) io.observe(grid);
+  })();
+
+  // Reveal once fonts have settled to avoid FOUT shifting the display type.
+  (function(){
+    function go(){ document.body.classList.add('ready'); }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(go);
+      setTimeout(go, 1400);
+    } else {
+      setTimeout(go, 200);
+    }
+  })();
+</script>
+
+</body>
+</html>

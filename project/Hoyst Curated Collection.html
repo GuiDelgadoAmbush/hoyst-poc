@@ -1,0 +1,1748 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hoyst — A curated selection for Sarah</title>
+<meta name="viewport" content="width=1440">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/fonts/atkinson-mono.css">
+<script src="image-slot.js"></script>
+<style>
+  :root{
+    /* Dark mode — warm neutral, paper inverted */
+    --bg: #0e0e0d;
+    --paper: #131312;
+    --paper-2: #171714;
+    --ink: #f2f0ec;
+    --ink-2: #c9c6bf;
+    --ink-3: #8e8a82;
+    --ink-4: #5c5953;
+    --rule: #26241f;
+    --rule-2: #1c1b18;
+    --placeholder: #1a1917;
+    --placeholder-ink: #4a4842;
+    --sans: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --serif: "Cormorant Garamond", "EB Garamond", "Palatino", Georgia, serif;
+    --panel-pad-x: clamp(56px, 6vw, 96px);
+    --panel-pad-y: clamp(72px, 10vh, 120px);
+    --panel-w: min(100vw, 1440px);
+    --topbar-h: 64px;
+    --topbar-offset: var(--topbar-h);
+    --bottombar-h: 0px;
+
+    /* Shared headline tokens — kept identical between loader and hero
+       so the reveal lands exactly on top of the live headline. */
+    --headline-size: clamp(48px, 8vh, 92px);
+    --headline-serif-size: clamp(66px, 11vh, 124px);
+    --headline-leading: .98;
+    --headline-track: -.02em;
+    --eyebrow-size: 11px;
+    --eyebrow-track: .32em;
+    --eyebrow-gap: 28px;        /* gap between eyebrow and headline */
+  }
+
+  *{box-sizing:border-box}
+  html, body{
+    margin:0; padding:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  body{
+    /* Vertical scroll — the page is one long document. */
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+
+  /* ============== Fixed Top Bar ============== */
+  .topbar{
+    position:fixed; top:0; left:0; right:0;
+    height:var(--topbar-h);
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 0 40px 0 24px;
+    border-bottom: 1px solid var(--rule);
+    background: rgba(14,14,13,.85);
+    backdrop-filter: blur(8px);
+    z-index: 50;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    transition: transform .42s cubic-bezier(.22, .61, .36, 1);
+  }
+  .topbar.is-hidden{
+    transform: translate3d(0, -100%, 0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .topbar{ transition: none; }
+  }
+  .topbar .left{display:flex;align-items:center;gap:24px;}
+  .logo-slot{
+    display:flex; align-items:center;
+    height: 40px;
+  }
+  .logo-slot img{
+    display:block;
+    height: 36px;
+    width: auto;
+  }
+  .topbar .right{display:flex;align-items:center;gap:32px;}
+  .nav-link{
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-2);
+    text-decoration:none;
+    font-weight:500;
+  }
+  .nav-link:hover{color:var(--ink)}
+  .client-tag{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-4);
+  }
+  .client-tag b{color:var(--ink-3);font-weight:500;}
+
+  /* ============== Fixed Bottom Bar (removed) ============== */
+  /* The bottom-fixed nav (progress dots + prev/next) was removed by
+     request. Keep --bottombar-h: 0 so the existing calc()s elsewhere
+     still resolve cleanly without each having to be touched. */
+  @keyframes nudge{
+    0%, 100%{transform:translateX(0); opacity:.6;}
+    50%{transform:translateX(6px); opacity:1;}
+  }
+  @keyframes nudge-vert{
+    0%, 100%{transform:translateY(0); opacity:.6;}
+    50%{transform:translateY(6px); opacity:1;}
+  }
+
+  /* ============== Stage / sections ============== */
+  /* Stage is just a vertical container. Each .panel is a section. */
+  .stage{
+    position: relative;
+    width: 100%;
+    /* No top padding — the hero is 100vh and centers its content well
+       below the topbar's 64px. Skipping the topbar padding here keeps
+       the hero's vertical center matching the loader-reveal's center,
+       so the eyebrow + headline don't jump on handoff. Other sections
+       handle their own top spacing (stack-cards sticky-pin below the
+       topbar; compare panel has its own padding-top). */
+    padding-top: 0;
+    padding-bottom: var(--bottombar-h);
+  }
+  .rail{
+    display: block;
+    width: 100%;
+  }
+  .panel{
+    width: 100%;
+    padding: var(--panel-pad-y) var(--panel-pad-x);
+    position: relative;
+  }
+  .panel-num{
+    position:absolute;
+    top: 28px;
+    left: var(--panel-pad-x);
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--ink-4);
+    z-index: 2;
+  }
+
+  /* ============== Serif & type system ============== */
+  .serif{font-family:var(--serif); font-weight:400;}
+  .ital{font-style:italic;}
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+    font-weight:500;
+  }
+  .micro{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-4);
+    font-weight:500;
+  }
+  .body{
+    font-size:15px;
+    line-height:1.65;
+    color:var(--ink-2);
+    max-width: 44ch;
+  }
+  .body.lg{font-size:16px; max-width:46ch;}
+
+  /* ============== Intro / Hero — centered, no image ==============
+     The hero is a single vertically-centered flex column so every
+     piece (eyebrow → headline → sub → meta → hint) sits inside the
+     first viewport with no dead space above. The loader reveal uses
+     an identical layout (with the auxiliary block kept invisible but
+     present) so the headline lands exactly on top through the fade. */
+  .panel.intro-panel{
+    padding: var(--topbar-h) clamp(40px, 6vw, 96px) calc(var(--bottombar-h) + 16px);
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(28px, 4vh, 56px);
+  }
+  .hero-headline{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--eyebrow-gap);
+    width: min(92%, 1100px);
+    margin: 0;
+  }
+  .hero-headline .eyebrow{
+    font-family: "Atkinson Hyperlegible Mono", monospace;
+    font-size: var(--eyebrow-size);
+    letter-spacing: var(--eyebrow-track);
+    text-transform: uppercase;
+    color: rgba(255,255,255,.45);
+    font-weight: 400;
+    margin: 0;
+  }
+  .hero-headline h1{
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: var(--headline-size);
+    line-height: var(--headline-leading);
+    letter-spacing: var(--headline-track);
+    margin: 0;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .hero-headline h1 .serif{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: var(--headline-serif-size);
+    letter-spacing: -.005em;
+  }
+  /* Subtitle, meta, hint — flow naturally below the headline. */
+  .hero-aux{
+    width: min(92%, 760px);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(18px, 2.6vh, 28px);
+  }
+  .hero-aux .sub{
+    font-size: clamp(14px, 1.6vh, 17px);
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 58ch;
+    margin: 0;
+  }
+  .hero-aux .meta-row{
+    display:flex; gap: clamp(28px, 4vw, 56px); align-items:center;
+    justify-content: center;
+    border-top:1px solid var(--rule);
+    padding-top: clamp(16px, 2.4vh, 24px);
+    margin-top: 4px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .hero-aux .meta-row .cell{display:flex; flex-direction:column; gap:6px; text-align:center;}
+  .hero-aux .meta-row .k{font-family:"Atkinson Hyperlegible Mono", monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-4);}
+  .hero-aux .meta-row .v{font-size:14px;color:var(--ink-2);}
+  .hero-aux .hint-line{
+    position: static;
+    display:flex; align-items:center; gap:14px;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color: var(--ink-4);
+    padding-top: 8px;
+  }
+  .hero-aux .hint-line .rule{width:64px; height:1px; background:var(--ink-4);}
+
+  /* Hero reveal — eyebrow + h1 fade in instantly (the loader holds the
+     same content in place), the auxiliary stack fades in just after. */
+  .panel.intro-panel .hero-headline,
+  .panel.intro-panel .hero-aux{
+    opacity: 0;
+    transition: opacity .9s var(--reveal-ease, cubic-bezier(.2,.6,.2,1));
+  }
+  .panel.intro-panel.is-active .hero-headline{ opacity: 1; }
+  .panel.intro-panel.is-active .hero-aux{ opacity: 1; transition-delay: .15s; }
+  .hero-aux > *{
+    opacity: 0; transform: translateY(10px);
+    transition: opacity .7s var(--reveal-ease, cubic-bezier(.2,.6,.2,1)),
+                transform .7s var(--reveal-ease, cubic-bezier(.2,.6,.2,1));
+  }
+  .panel.intro-panel.is-active .hero-aux > *{ opacity: 1; transform: none; }
+  .panel.intro-panel.is-active .hero-aux > *:nth-child(1){ transition-delay: .15s; }
+  .panel.intro-panel.is-active .hero-aux > *:nth-child(2){ transition-delay: .25s; }
+  .panel.intro-panel.is-active .hero-aux > *:nth-child(3){ transition-delay: .35s; }
+
+  /* ============== Packages — stacking cards (pure CSS sticky) ==============
+     Each .stack-card lives directly inside .packages and uses
+     position: sticky with a progressively larger top value and z-index
+     so each new card pins a little lower than the previous one, leaving
+     the prior card's top edge peeking above for a layered look. No
+     scroll-driven JS — the browser does the work. Min-height of 85vh on
+     each card guarantees the user has to scroll to reveal the next one. */
+  .packages{
+    /* Pull the first card up into the hero's bottom margin so a sliver
+       of it is visible in the hero viewport. */
+    margin-top: -14vh;
+    padding: 0 clamp(24px, 4vw, 56px);
+    display: flex;
+    flex-direction: column;
+  }
+  .stack-card[data-stack-index="0"]{ top: calc(var(--topbar-offset) + 24px); z-index: 1; }
+  .stack-card[data-stack-index="1"]{ top: calc(var(--topbar-offset) + 64px); z-index: 2; }
+  .stack-card[data-stack-index="2"]{ top: calc(var(--topbar-offset) + 104px); z-index: 3; }
+  /* Tightens stack-card pinning when the topbar hides so the cards reclaim
+     the freed space. To revert: change `var(--topbar-offset)` back to
+     `var(--topbar-h)` in the three rules above and drop the `top` entry
+     from the stack-card transition below. */
+
+  /* Progressive width while stacking — driven by a `--cover` custom prop
+     set in JS as a 0..N float ("how many cards are currently covering me",
+     fractional during transitions). Each unit of cover pulls width in by
+     5%, so 1.0 = 95%, 2.0 = 90%. Centered via margin auto so both edges
+     pull in equally. The CSS transition smooths out scroll-tick jitter. */
+  .stack-card{
+    width: calc(100% - var(--cover, 0) * 5%);
+    margin-left: auto;
+    margin-right: auto;
+    /* Per-frame JS already provides smooth interpolation. The short
+       transition just damps out micro-jitter between scroll ticks
+       without feeling laggy. */
+    transition: width .18s linear,
+                top .42s cubic-bezier(.22, .61, .36, 1);
+    will-change: width;
+  }
+
+  .stack-card{
+    position: sticky;
+    min-height: 85vh;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    --card-pad-x: clamp(40px, 5vw, 72px);
+    padding: clamp(36px, 5vh, 56px) var(--card-pad-x);
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    column-gap: clamp(40px, 5vw, 72px);
+    align-items: center;
+    /* Top-oriented drop shadow — the card casts a soft shadow upward
+       onto the sliver of the previous card peeking above it, selling
+       the "sitting on top of the layer beneath" illusion. A 1px hair-
+       line highlight on the inner top edge sharpens the boundary. */
+    box-shadow:
+      0 -1px 0 rgba(255, 255, 255, .04) inset,
+      0 -14px 36px -14px rgba(0, 0, 0, .65);
+  }
+  .stack-card .panel-num{
+    position: absolute;
+    top: 24px;
+    left: var(--card-pad-x);
+    color: var(--ink-4);
+  }
+  .stack-card .side-label{
+    position: absolute;
+    top: 24px;
+    right: var(--card-pad-x);
+    font-size:10px;
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    color:var(--ink-4);
+  }
+  .stack-card .img-col{
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+  }
+  .stack-card .img-col image-slot{
+    width: 100%;
+    height: 100%;
+    max-height: calc(85vh - clamp(72px, 10vh, 112px));
+    display: block;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .stack-card .img-caption{
+    display: none;
+  }
+  .stack-card .copy-col{
+    display:flex; flex-direction:column;
+    gap: clamp(16px, 2.4vh, 28px);
+    max-width: 520px;
+    padding: 8px 0;
+  }
+  .stack-card .no{
+    font-family: var(--serif);
+    font-style: normal;
+    font-weight: 400;
+    font-size: clamp(28px, 4vh, 44px);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -.01em;
+  }
+  .stack-card .loc{
+    font-size: 11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color: var(--ink-3);
+  }
+  .stack-card .name{
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(44px, 6.6vh, 72px);
+    line-height: 1;
+    margin: 0;
+    color: var(--ink);
+    letter-spacing: -.005em;
+  }
+  .stack-card .desc{
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 46ch;
+  }
+  .stack-card .stats{
+    display:flex; align-items:center; gap: 24px;
+    padding: 16px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    font-size: 13px;
+    color: var(--ink-2);
+    flex-wrap: wrap;
+  }
+  .stack-card .stats .dot{color: var(--ink-4);}
+  .stack-card .stats .price{color:var(--ink); font-weight:500;}
+  .stack-card .stats .lab{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-4); display:block; margin-bottom:4px;}
+  .stack-card .stats .cell{display:flex; flex-direction:column;}
+  .stack-card .stats .sep{width:1px; height:24px; background:var(--rule);}
+  .stack-card .actions{
+    display:flex; align-items:center; justify-content:space-between;
+    gap: 20px;
+  }
+
+  /* Generic helpers reused from before */
+  .view-link{
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink);
+    text-decoration:none;
+    border-bottom:1px solid var(--ink);
+    padding-bottom: 4px;
+    font-weight:500;
+    transition: color .25s ease, border-color .25s ease;
+  }
+  .view-link .arrow{margin-left:6px; display:inline-block; transition:transform .3s ease;}
+  .view-link:hover{color:var(--ink-2); border-color:var(--ink-2);}
+  .view-link:hover .arrow{transform:translateX(4px);}
+
+  /* ============== Apple-style expand-to-detail transition ============== */
+  /* Black backdrop fades in behind the growing image so the navigation
+     hand-off never flashes white (the detail page is also black). */
+  .morph-backdrop{
+    position: fixed; inset: 0;
+    background: #000;
+    opacity: 0;
+    z-index: 9998;
+    pointer-events: none;
+    transition: opacity .5s ease .12s;
+  }
+  .morph-backdrop.on{ opacity: 1; }
+  /* The flying image: starts pinned to the card thumbnail's box, then
+     grows to full-bleed on an ease-in-out ramp, cover-cropping the whole
+     way so it lands exactly on the detail page's full-bleed hero. */
+  .morph-overlay{
+    position: fixed;
+    z-index: 9999;
+    overflow: hidden;
+    will-change: left, top, width, height, border-radius;
+    box-shadow: 0 40px 120px rgba(0,0,0,.45);
+    transition:
+      left .82s cubic-bezier(.66,0,.18,1),
+      top .82s cubic-bezier(.66,0,.18,1),
+      width .82s cubic-bezier(.66,0,.18,1),
+      height .82s cubic-bezier(.66,0,.18,1),
+      border-radius .6s ease,
+      box-shadow .82s ease;
+  }
+  .morph-overlay img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* The originating page eases back and dims, the way an Apple grid recedes
+     as a tile takes over the screen. */
+  body.is-leaving .rail{
+    transition: opacity .5s ease, transform .82s cubic-bezier(.66,0,.18,1);
+    opacity: 0;
+    transform: scale(.985);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .morph-overlay, body.is-leaving .rail{ transition: none; }
+  }
+  .status-tag{
+    font-size:10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+    display:flex; align-items:center; gap:8px;
+  }
+  .status-tag::before{
+    content:""; width:6px; height:6px; border-radius:50%;
+    background:var(--ink-3);
+    display:inline-block;
+  }
+
+  /* ============== Comparison Panel ============== */
+  .panel.compare-panel{
+    padding-top: clamp(96px, 14vh, 160px);
+    padding-bottom: clamp(96px, 14vh, 160px);
+  }
+  .compare{
+    display:flex;
+    flex-direction:column;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    gap: clamp(28px, 4vh, 48px);
+  }
+  .compare-head{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    gap: 40px;
+  }
+  .compare-head .title{
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: clamp(32px, 4.5vh, 52px);
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -.01em;
+  }
+  .compare-head .title .serif{font-family:var(--serif); font-weight:400; font-style: italic; font-size: clamp(42px, 6vh, 70px);}
+  .compare-head .title .ital{font-weight:300;}
+  .compare-head .lead{
+    font-size:14px;
+    color: var(--ink-2);
+    max-width: 36ch;
+    line-height:1.55;
+  }
+
+  table.matrix{
+    width:100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  table.matrix col.label-col{width:22%;}
+  table.matrix col.res-col{width:26%;}
+  table.matrix thead th{
+    text-align:left;
+    padding: clamp(14px, 2vh, 22px) 24px clamp(14px, 2vh, 22px) 0;
+    vertical-align:bottom;
+    border-bottom: 1px solid var(--ink);
+    position: sticky;
+    top: var(--topbar-offset);
+    background: var(--bg);
+    z-index: 5;
+    box-shadow: inset 0 -1px 0 var(--ink);
+  }
+  table.matrix thead th .col-name{
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(22px, 3vh, 30px);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing:-.005em;
+    margin-bottom: 8px;
+  }
+  table.matrix thead th .col-loc{
+    font-size: 10px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+  }
+  table.matrix thead th.empty{border-bottom: 1px solid var(--ink);}
+  table.matrix tbody td{
+    padding: clamp(10px, 1.6vh, 16px) 24px clamp(10px, 1.6vh, 16px) 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 14px;
+    color: var(--ink);
+    vertical-align: middle;
+  }
+  table.matrix tbody tr:last-child td{border-bottom: 1px solid var(--rule);}
+  table.matrix tbody td.row-label{
+    font-size: 10px;
+    letter-spacing:.18em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+  table.matrix tbody td.muted{color:var(--ink-2);}
+  table.matrix tbody tr:not(.section-row) td{
+    transition: background-color .2s ease, color .2s ease;
+  }
+  table.matrix tbody tr:not(.section-row):hover td{
+    background-color: rgba(255, 255, 255, .035);
+  }
+  table.matrix tbody tr:not(.section-row):hover td.row-label,
+  table.matrix tbody tr:not(.section-row):hover td.muted{
+    color: var(--ink);
+  }
+
+  /* ============== Stack-card CTA hover ============== */
+  .stack-card .view-link{
+    transition: background-color .25s ease,
+                border-color .25s ease,
+                color .25s ease,
+                letter-spacing .25s ease;
+  }
+  .stack-card .view-link:hover{
+    background-color: rgba(255, 255, 255, 0.92) !important;
+    border-color: rgba(255, 255, 255, 0.92) !important;
+    color: rgb(20, 28, 70) !important;
+  }
+  .stack-card .view-link:active{
+    transform: translateY(1px);
+  }
+  .stack-card .view-link:focus-visible{
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline-offset: 3px;
+  }
+  table.matrix tbody tr.section-row td{
+    padding-top: clamp(28px, 3.6vh, 40px);
+    padding-bottom: clamp(10px, 1.4vh, 14px);
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--sans);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: -.005em;
+    text-transform: none;
+    color: var(--ink);
+  }
+  table.matrix tbody tr.section-row:first-child td{
+    padding-top: clamp(10px, 1.2vh, 14px);
+  }
+  table.matrix tbody tr:nth-child(n+9){ transition-delay: .62s !important; }
+
+  /* ============== Footer ============== */
+  .site-footer{
+    border-top: 1px solid var(--rule);
+    padding: clamp(28px, 4vh, 44px) clamp(24px, 4vw, 48px);
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-4);
+  }
+
+  .compare-actions{
+    display:flex; justify-content:center;
+    margin-top: 16px;
+  }
+  .btn-primary{
+    appearance: none;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    padding: 14px 28px;
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .btn-primary:hover{
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+  }
+
+  /* Make the image-slot placeholder fit the dark theme */
+  image-slot{
+    --slot-bg: var(--placeholder);
+    --slot-ink: var(--placeholder-ink);
+    background: var(--placeholder);
+    color: var(--placeholder-ink);
+  }
+
+  /* Tabular numerals for prices/stats */
+  .tnum{font-variant-numeric: tabular-nums;}
+
+  /* ============== Scroll reveal ============== */
+  :root{
+    --reveal-ease: cubic-bezier(.2,.6,.2,1);
+    --reveal-dur: .85s;
+  }
+
+  /* Stacking cards reveal */
+  .stack-card .copy-col > *,
+  .stack-card .img-col{
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .7s var(--reveal-ease),
+                transform .7s var(--reveal-ease);
+  }
+  .stack-card.is-in .img-col{ opacity: 1; transform: none; transition-delay: .05s; }
+  .stack-card.is-in .copy-col > *{ opacity: 1; transform: none; }
+  .stack-card.is-in .copy-col > *:nth-child(1){ transition-delay: .10s; }
+  .stack-card.is-in .copy-col > *:nth-child(2){ transition-delay: .16s; }
+  .stack-card.is-in .copy-col > *:nth-child(3){ transition-delay: .22s; }
+  .stack-card.is-in .copy-col > *:nth-child(4){ transition-delay: .30s; }
+  .stack-card.is-in .copy-col > *:nth-child(5){ transition-delay: .38s; }
+  .stack-card.is-in .copy-col > *:nth-child(6){ transition-delay: .46s; }
+
+  /* Compare panel reveal */
+  .panel .compare-head > *,
+  .panel .compare-actions{
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity .7s var(--reveal-ease),
+                transform .7s var(--reveal-ease);
+  }
+  .compare-head.is-in > *,
+  .compare-actions.is-in{ opacity: 1; transform: none; }
+  .compare-head.is-in > *:nth-child(1){ transition-delay: .00s; }
+  .compare-head.is-in > *:nth-child(2){ transition-delay: .10s; }
+  .compare-actions.is-in{ transition-delay: .15s; }
+
+  .panel table.matrix thead th,
+  .panel table.matrix tbody tr{
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .55s var(--reveal-ease),
+                transform .55s var(--reveal-ease);
+  }
+  table.matrix.is-in thead th,
+  table.matrix.is-in tbody tr{ opacity: 1; transform: none; }
+  table.matrix.is-in thead th:nth-child(1){ transition-delay: .05s; }
+  table.matrix.is-in thead th:nth-child(2){ transition-delay: .11s; }
+  table.matrix.is-in thead th:nth-child(3){ transition-delay: .17s; }
+  table.matrix.is-in thead th:nth-child(4){ transition-delay: .23s; }
+  table.matrix.is-in tbody tr:nth-child(1){ transition-delay: .20s; }
+  table.matrix.is-in tbody tr:nth-child(2){ transition-delay: .26s; }
+  table.matrix.is-in tbody tr:nth-child(3){ transition-delay: .32s; }
+  table.matrix.is-in tbody tr:nth-child(4){ transition-delay: .38s; }
+  table.matrix.is-in tbody tr:nth-child(5){ transition-delay: .44s; }
+  table.matrix.is-in tbody tr:nth-child(6){ transition-delay: .50s; }
+  table.matrix.is-in tbody tr:nth-child(7){ transition-delay: .56s; }
+  table.matrix.is-in tbody tr:nth-child(8){ transition-delay: .62s; }
+
+  /* Respect user preference — no motion if requested */
+  @media (prefers-reduced-motion: reduce){
+    .panel .res .img-col,
+    .panel .res .copy-col > *,
+    .stack-card .copy-col > *,
+    .stack-card .img-col,
+    .panel .panel-num,
+    .panel .side-label,
+    .panel .compare-head > *,
+    .panel .compare-actions,
+    .panel table.matrix thead th,
+    .panel table.matrix tbody tr,
+    .hero-headline, .hero-aux, .hero-aux > *{
+      opacity: 1; transform: none; transition: none;
+    }
+    html{ scroll-behavior: auto; }
+    body{ scroll-behavior: auto; }
+  }
+
+  /* ============== Loader ============== */
+  .loader{
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background: #000;
+    transition: background-color .9s cubic-bezier(.4,0,.2,1),
+                opacity .9s cubic-bezier(.4,0,.2,1),
+                visibility 0s linear 1s;
+  }
+  .loader.is-gone{
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    background: var(--bg);
+  }
+  .loader-mark{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    height: 280px;
+  }
+  .loader.is-gone .loader-mark{
+    transform: translate(-50%, -50%) scale(1.06);
+    opacity: 0;
+    transition: transform 1s cubic-bezier(.4,0,.2,1),
+                opacity .7s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* Sequenced entrance: logo first, then track, then fill begins */
+  .loader-ring{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    overflow: visible;
+  }
+  .loader-ring .track{
+    fill: none;
+    stroke: rgba(255,255,255,.10);
+    stroke-width: .6;
+    opacity: 0;
+    animation: loaderTrackIn 900ms cubic-bezier(.4,0,.2,1) 1300ms forwards;
+  }
+  .loader-ring .progress{
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: .6;
+    stroke-linecap: round;
+    opacity: 0;
+    animation: loaderTrackIn 500ms cubic-bezier(.4,0,.2,1) 2600ms forwards;
+  }
+  .loader-logo{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, calc(-50% + 6px)) scale(.985);
+    width: 48%;
+    height: auto;
+    display: block;
+    opacity: 0;
+    animation: loaderLogoIn 1400ms cubic-bezier(.2,.6,.2,1) 500ms forwards;
+  }
+  @keyframes loaderLogoIn{
+    from{ opacity: 0; transform: translate(-50%, calc(-50% + 6px)) scale(.985); }
+    to  { opacity: .94; transform: translate(-50%, calc(-50% + 6px)) scale(1); }
+  }
+  @keyframes loaderTrackIn{
+    from{ opacity: 0; }
+    to  { opacity: 1; }
+  }
+
+  /* Reveal headline — mirrors the hero panel layout exactly (same
+     padding, gap, justify-content) so the eyebrow + headline land on
+     top of the live hero through the fade. The aux block is rendered
+     invisibly to occupy the same vertical space as the real one.
+     Note: padding is 0 to match the intro panel's current state — if
+     the panel's padding changes, mirror it here. */
+  .loader-reveal{
+    position: absolute;
+    inset: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(28px, 4vh, 56px);
+    text-align: center;
+    color: var(--ink);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .9s cubic-bezier(.4,0,.2,1);
+  }
+  .loader-reveal .headline-group{
+    width: min(92%, 1100px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--eyebrow-gap);
+  }
+  .loader-reveal .aux-ghost{
+    visibility: hidden;
+    width: min(92%, 760px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(18px, 2.6vh, 28px);
+  }
+  .loader-reveal .aux-ghost .meta-row{
+    display:flex; gap: clamp(28px, 4vw, 56px); align-items:center;
+    justify-content: center;
+    border-top:1px solid var(--rule);
+    padding-top: clamp(16px, 2.4vh, 24px);
+    margin-top: 4px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .loader-reveal .aux-ghost .meta-row .cell{display:flex; flex-direction:column; gap:6px;}
+  .loader-reveal .aux-ghost .meta-row .k{font-family:"Atkinson Hyperlegible Mono", monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+  .loader-reveal .aux-ghost .meta-row .v{font-size:14px;}
+  .loader-reveal .aux-ghost .sub{
+    font-size: clamp(14px, 1.6vh, 17px);
+    line-height: 1.6;
+    max-width: 58ch;
+    margin: 0;
+  }
+  .loader-reveal .aux-ghost .hint-line{
+    display:flex; align-items:center; gap:14px;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    padding-top: 8px;
+  }
+  .loader-reveal .aux-ghost .hint-line .rule{width:64px; height:1px; background:transparent;}
+  .loader-reveal .eyebrow{
+    display: block;
+    font-family: "Atkinson Hyperlegible Mono", monospace;
+    font-size: 12px;
+    letter-spacing: var(--eyebrow-track);
+    text-transform: uppercase;
+    color: rgba(255,255,255,.45);
+    font-weight: 400;
+    margin: 0;
+  }
+  .loader-reveal .headline{
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: var(--headline-size);
+    line-height: var(--headline-leading);
+    letter-spacing: var(--headline-track);
+    color: #ffffff;
+    margin: 0;
+    white-space: nowrap;
+  }
+  .loader-reveal .headline .serif{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: var(--headline-serif-size);
+    letter-spacing: -.005em;
+  }
+  .loader.is-reveal .loader-reveal{
+    opacity: 1;
+  }
+  /* When reveal is active, hide the mark */
+  .loader.is-reveal .loader-mark{
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.04);
+    transition: opacity .7s cubic-bezier(.4,0,.2,1),
+                transform 1s cubic-bezier(.4,0,.2,1);
+  }
+
+  body.is-loading{ overflow: hidden; }
+  body.is-loading .stage{ pointer-events: none; }
+</style>
+</head>
+<body class="is-loading" style="background-color: rgb(0, 0, 0)">
+
+<!-- ============== Loader ============== -->
+<div class="loader" id="loader" role="status" aria-label="Loading">
+  <div class="loader-mark">
+    <svg class="loader-ring" viewBox="0 0 100 100" aria-hidden="true">
+      <circle class="track" cx="50" cy="50" r="48.5"></circle>
+      <circle class="progress" cx="50" cy="50" r="48.5"
+              pathLength="1"
+              stroke-dasharray="1"
+              stroke-dashoffset="1"></circle>
+    </svg>
+    <img class="loader-logo" src="assets/hoyst-logo-trim.png" alt="Hoyst">
+  </div>
+  <div class="loader-reveal" aria-hidden="true">
+    <div class="headline-group">
+      <span class="eyebrow">Curated by Adam</span>
+      <h2 class="headline" style="font-weight: 600; font-family: Inter">A curated selection<br><i style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 500; font-size: 82px">for Sarah.</i></h2>
+    </div>
+    <!-- Mirrors the hero's auxiliary content exactly so the headline-
+         group lands in the same Y position as the live hero headline.
+         Visually hidden — purely a layout spacer. -->
+    <div class="aux-ghost" aria-hidden="true" style="gap: 18px">
+      <p class="sub" style="width: 669px">I've put together what I think are three genuinely strong investment options. I've been thorough on the due diligence, so you can focus on which one feels right for your situation.</p>
+      <div class="meta-row" style="border-width: 0px; gap: 64px">
+        <div class="cell"><span class="k">PACKAGES</span><span class="v">Three</span></div>
+        <div class="cell"><span class="k">Price range</span><span class="v">$742,227 – $799,272</span></div>
+        <div class="cell"><span class="k">Estimated yield</span><span class="v">3.8% – 4.7% p.a.</span></div>
+        <div class="cell"><span class="k">Prepared</span><span class="v">26 May 2026</span></div>
+        <div class="cell"><span class="k">Validity</span><span class="v">30 June 2026</span></div>
+      </div>
+      <div class="hint-line"><span class="rule"></span><span>Scroll to begin</span><span class="arrow">↓</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== Top Bar ============== -->
+<header class="topbar" data-screen-label="Top Bar">
+  <div class="left">
+    <div class="logo-slot" aria-label="Hoyst">
+      <img src="assets/hoyst-logo.png" alt="Hoyst">
+    </div>
+  </div>
+  <div class="right">
+    <span class="client-tag" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Private collection · <b>Sarah Chen</b></span>
+  </div>
+</header>
+
+<!-- ============== Stage (vertical) ============== -->
+<main class="stage" id="stage">
+  <div class="rail" id="rail">
+
+    <!-- ---------- 01 · INTRO / HERO ---------- -->
+    <section class="panel intro-panel" data-screen-label="01 Intro" data-panel="1" data-panel-label="Intro" id="panel-intro" style="height: 90px; padding: 0px">
+      <div class="hero-headline">
+        <span class="eyebrow" style="font-size: 12px">CURATED BY ADAM</span>
+        <h1 style="font-weight: 600; font-family: Inter">A curated selection<br><i style="font-family: &#39;Cormorant Garamond&#39;, serif; font-style: italic; font-weight: 500; font-size: 82px">for Sarah.</i></h1>
+      </div>
+      <div class="hero-aux" style="gap: 18px">
+        <p class="sub" style="width: 669px">I've put together what I think are three genuinely strong investment options. I've been thorough on the due diligence, so you can focus on which one feels right for your situation.</p>
+        <div class="meta-row" style="border-width: 0px; gap: 64px; width: 815px">
+          <div class="cell">
+            <span class="k" style="font-size: 11px">PACKAGES</span>
+            <span class="v">Three</span>
+          </div>
+          <div class="cell">
+            <span class="k" style="font-size: 11px">Price range</span>
+            <span class="v">$660,500 - $720,500</span>
+          </div>
+          <div class="cell">
+            <span class="k" style="font-size: 11px">Estimated yield</span>
+            <span class="v">4.8% – 5.6% p.a.</span>
+          </div>
+          <div class="cell">
+            <span class="k" style="font-size: 11px">Prepared</span>
+            <span class="v">26 May 2026</span>
+          </div>
+          <div class="cell">
+            <span class="k" style="font-size: 11px">Validity</span>
+            <span class="v">30 June 2026</span>
+          </div>
+        </div>
+        <div class="hint-line" style="opacity: 0">
+          <span class="rule"></span>
+          <span>Scroll to begin</span>
+          <span class="arrow" style="animation: nudge-vert 2.2s ease-in-out infinite;">↓</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- 02 · PACKAGES (stacking cards) ---------- -->
+    <div class="packages" id="packages" style="gap: 16px; text-align: left">
+
+      <article class="stack-card" data-stack-index="0" data-screen-label="02 The Aspire" data-panel="2" data-panel-label="The Aspire" id="panel-aspire" style="border-radius: 8px; background-color: rgb(165, 64, 45); border-color: rgba(255, 255, 255, 0.1); --card-pad-x: 58px; padding: 44px 60px 44px 58px; grid-template-columns: minmax(0, 1fr) minmax(0, 480px); text-align: left; align-items: start">
+          <span class="panel-num" style="color: rgb(255, 255, 255); margin: 0px; padding: 0px; width: 204px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">No. 01 · The Aspire</span>
+          <span class="side-label" style="color: rgb(255, 255, 255); margin: 0px -10px 0px 0px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Cloverton · Victoria</span>
+          <div class="img-col" style="padding: 20px 0px 0px">
+            <image-slot id="res-01-aspire" shape="rect" placeholder="The Aspire — exterior" style="width: 100%; height: 100%; border-radius: 4px"></image-slot>
+          </div>
+          <div class="copy-col" style="padding: 52px 0px 8px; gap: 18px; align-items: stretch; justify-content: flex-start">
+            <div class="no" style="font-family: Inter">No. 01</div>
+            <div class="loc" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px; margin: -12px 0px 0px; color: rgba(255, 255, 255, 0.7)">Cloverton, VIC</div>
+            <h2 class="name" style="padding: 20px 0px 0px">The Aspire</h2>
+            <p class="desc" style="max-width: none; width: 100%; color: rgba(255, 255, 255, 0.7)">A long, low form set back from the street to make room for a deep northern garden. The plan is pulled apart in the middle so light reaches the living edge from two sides — a quiet house, easy to keep, and built to hold its value as the estate matures.</p>
+            <div class="stats" style="display: flex; flex-direction: column; align-items: stretch; gap: 24px; padding: 0; border: 0">
+              <div class="cell" style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start">
+                <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-size: 12px; font-family: &quot;Atkinson Hyperlegible Mono&quot;">From</span>
+                <span class="price tnum" style="color: rgb(255, 255, 255); font-size: 20px; font-weight: 400; line-height: 1">$660,500</span>
+              </div>
+              <div style="height: 1px; background: rgba(255, 255, 255, 0.18); width: 100%"></div>
+              <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr); gap: 32px; align-items: start">
+                <div class="cell" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+                  <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Land</span>
+                  <span class="tnum" style="color: rgb(255, 255, 255); font-size: 14px">400 m²</span>
+                </div>
+                <div class="cell" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+                  <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">House</span>
+                  <span class="tnum" style="color: rgb(255, 255, 255); font-size: 14px">184.46 m²</span>
+                </div>
+                <div class="cell" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+                  <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Configurations</span>
+                  <span class="tnum" style="color: rgb(255, 255, 255); display: inline-flex; align-items: center; gap: 10px; font-size: 14px">
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 16px; height: 16px"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+                      4
+                    </span>
+                    <span style="color: rgba(255,255,255,0.35)">·</span>
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 16px; height: 16px"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2"/><line x1="4" x2="22" y1="13" y2="13"/><path d="M14 13v3"/><path d="M18 13v3"/><path d="M22 13v3"/><path d="M9 16v2"/><path d="M15 16v2"/></svg>
+                      2
+                    </span>
+                    <span style="color: rgba(255,255,255,0.35)">·</span>
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="height: 16px; width: 16px"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                      2
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="actions" style="margin: 32px 0px 0px">
+              <a href="#" class="view-link" style="display: inline-flex; align-items: center; justify-content: center; padding: 8px 20px; border: 1px solid rgba(255, 255, 255, 0.65); border-bottom: 1px solid rgba(255, 255, 255, 0.65); color: rgb(255, 255, 255); text-decoration: none; letter-spacing: 2px; font-weight: 400">Explore residence</a>
+            </div>
+          </div>
+        </article>
+
+      <article class="stack-card" data-stack-index="1" data-screen-label="03 The Horizon" data-panel="3" data-panel-label="The Horizon" id="panel-horizon" style="border-radius: 8px; background-color: rgb(0, 127, 136); border-color: rgba(255, 255, 255, 0.1); --card-pad-x: 58px; padding: 44px 60px 44px 58px; grid-template-columns: minmax(0, 1fr) minmax(0, 480px); text-align: left; align-items: start">
+          <span class="panel-num" style="color: rgb(255, 255, 255); margin: 0px; padding: 0px; width: 263px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">No. 02 · The Horizon</span>
+          <span class="side-label" style="color: rgb(255, 255, 255); margin: 0px -10px 0px 0px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Aurora · Victoria</span>
+          <div class="img-col" style="padding: 20px 0px 0px">
+            <image-slot id="res-02-horizon" shape="rect" placeholder="The Horizon — exterior" style="width: 100%; height: 100%; border-radius: 4px"></image-slot>
+          </div>
+          <div class="copy-col" style="padding: 52px 0px 8px; gap: 18px; align-items: stretch; justify-content: flex-start">
+            <div class="no" style="color: rgb(255, 255, 255); font-family: Inter">No. 02</div>
+            <div class="loc" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px; margin: -12px 0px 0px; color: rgba(255, 255, 255, 0.7)">Aurora, VIC</div>
+            <h2 class="name" style="padding: 20px 0px 0px; color: rgb(255, 255, 255)">The Horizon</h2>
+            <p class="desc" style="max-width: none; width: 100%; color: rgba(255, 255, 255, 0.7)">Of the three, this is the one I would put forward first. The block sits on the high side of the street, with a wider frontage than the others and a longer northern boundary — meaning more usable light through winter and a stronger five-year growth picture for the suburb.</p>
+            <div class="stats" style="display: flex; flex-direction: column; align-items: stretch; gap: 24px; padding: 0; border: 0">
+              <div class="cell" style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start">
+                <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-size: 12px; font-family: &quot;Atkinson Hyperlegible Mono&quot;">From</span>
+                <span class="price tnum" style="color: rgb(255, 255, 255); font-size: 20px; font-weight: 400; line-height: 1">$684,000</span>
+              </div>
+              <div style="height: 1px; background: rgba(255, 255, 255, 0.18); width: 100%"></div>
+              <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr); gap: 32px; align-items: start">
+                <div class="cell" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+                  <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Land</span>
+                  <span class="tnum" style="color: rgb(255, 255, 255); font-size: 14px">448 m²</span>
+                </div>
+                <div class="cell" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+                  <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">House</span>
+                  <span class="tnum" style="color: rgb(255, 255, 255); font-size: 14px">196 m²</span>
+                </div>
+                <div class="cell" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+                  <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Configurations</span>
+                  <span class="tnum" style="color: rgb(255, 255, 255); display: inline-flex; align-items: center; gap: 10px; font-size: 14px">
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 16px; height: 16px"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+                      4
+                    </span>
+                    <span style="color: rgba(255,255,255,0.35)">·</span>
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 16px; height: 16px"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2"/><line x1="4" x2="22" y1="13" y2="13"/><path d="M14 13v3"/><path d="M18 13v3"/><path d="M22 13v3"/><path d="M9 16v2"/><path d="M15 16v2"/></svg>
+                      2
+                    </span>
+                    <span style="color: rgba(255,255,255,0.35)">·</span>
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="height: 16px; width: 16px"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                      2
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="actions" style="margin: 32px 0px 0px">
+              <a href="#" class="view-link" style="display: inline-flex; align-items: center; justify-content: center; padding: 8px 20px; border: 1px solid rgba(255, 255, 255, 0.65); border-bottom: 1px solid rgba(255, 255, 255, 0.65); color: rgb(255, 255, 255); text-decoration: none; letter-spacing: 2px; font-weight: 400">Explore residence</a>
+            </div>
+          </div>
+        </article>
+
+      <article class="stack-card" data-stack-index="2" data-screen-label="04 The Vista" data-panel="4" data-panel-label="The Vista" id="panel-vista" style="border-radius: 8px; background-color: rgb(30, 86, 61); border-color: rgba(255, 255, 255, 0.1); --card-pad-x: 58px; padding: 44px 60px 44px 58px; grid-template-columns: minmax(0, 1fr) minmax(0, 480px); text-align: left; align-items: start">
+          <span class="panel-num" style="color: rgb(255, 255, 255); margin: 0px; padding: 0px; width: 202px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">No. 03 · The Vista</span>
+          <span class="side-label" style="color: rgb(255, 255, 255); margin: 0px -10px 0px 0px; font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px">Bloomdale · Victoria</span>
+          <div class="img-col" style="padding: 20px 0px 0px">
+            <image-slot id="res-03-vista" shape="rect" placeholder="The Vista — exterior" style="width: 100%; height: 100%; border-radius: 4px"></image-slot>
+          </div>
+          <div class="copy-col" style="padding: 52px 0px 8px; gap: 18px; align-items: stretch; justify-content: flex-start">
+            <div class="no" style="color: rgb(255, 255, 255); font-family: Inter">No. 03</div>
+            <div class="loc" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 12px; margin: -12px 0px 0px; color: rgba(255, 255, 255, 0.7)">Bloomdale, VIC</div>
+            <h2 class="name" style="padding: 20px 0px 0px; color: rgb(255, 255, 255)">The Vista</h2>
+            <p class="desc" style="max-width: none; width: 100%; color: rgba(255, 255, 255, 0.7)">The largest of the three blocks, on a quieter loop at the edge of a future reserve. Settlement is further out, which trades immediacy for headroom — both in the plan and in the price. Worth holding in mind as the long view.</p>
+            <div class="stats" style="display: flex; flex-direction: column; align-items: stretch; gap: 24px; padding: 0; border: 0">
+              <div class="cell" style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start">
+                <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-size: 12px; font-family: &quot;Atkinson Hyperlegible Mono&quot;">From</span>
+                <span class="price tnum" style="color: rgb(255, 255, 255); font-size: 20px; font-weight: 400; line-height: 1">$720,500</span>
+              </div>
+              <div style="height: 1px; background: rgba(255, 255, 255, 0.18); width: 100%"></div>
+              <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr); gap: 32px; align-items: start">
+                <div class="cell" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+                  <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Land</span>
+                  <span class="tnum" style="color: rgb(255, 255, 255); font-size: 14px">512 m²</span>
+                </div>
+                <div class="cell" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+                  <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">House</span>
+                  <span class="tnum" style="color: rgb(255, 255, 255); font-size: 14px">215 m²</span>
+                </div>
+                <div class="cell" style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+                  <span class="lab" style="color: rgba(255, 255, 255, 0.7); font-family: &quot;Atkinson Hyperlegible Mono&quot;; font-size: 11px">Configurations</span>
+                  <span class="tnum" style="color: rgb(255, 255, 255); display: inline-flex; align-items: center; gap: 10px; font-size: 14px">
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 16px; height: 16px"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg>
+                      4
+                    </span>
+                    <span style="color: rgba(255,255,255,0.35)">·</span>
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width: 16px; height: 16px"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2"/><line x1="4" x2="22" y1="13" y2="13"/><path d="M14 13v3"/><path d="M18 13v3"/><path d="M22 13v3"/><path d="M9 16v2"/><path d="M15 16v2"/></svg>
+                      2
+                    </span>
+                    <span style="color: rgba(255,255,255,0.35)">·</span>
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="height: 16px; width: 16px"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                      2
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="actions" style="margin: 32px 0px 0px">
+              <a href="#" class="view-link" style="display: inline-flex; align-items: center; justify-content: center; padding: 8px 20px; border: 1px solid rgba(255, 255, 255, 0.65); border-bottom: 1px solid rgba(255, 255, 255, 0.65); color: rgb(255, 255, 255); text-decoration: none; letter-spacing: 2px; font-weight: 400">Explore residence</a>
+            </div>
+          </div>
+        </article>
+
+    </div>
+
+    <!-- ---------- 05 · COMPARISON ---------- -->
+    <section class="panel compare-panel" data-screen-label="05 Side by side" data-panel="5" data-panel-label="Compare" id="panel-compare">
+      <div class="compare" style="gap: 32px">
+        <div class="compare-head">
+          <h2 class="title">Side by <span class="serif">side</span>.</h2>
+        </div>
+
+        <table class="matrix">
+          <colgroup>
+            <col class="label-col">
+            <col class="res-col">
+            <col class="res-col">
+            <col class="res-col">
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="empty" style="background-color: rgb(0, 0, 0)"></th>
+              <th style="background-color: rgb(0, 0, 0)">
+                <div class="col-name" style="font-size: 28px">The Aspire</div>
+                <div class="col-loc" style="font-size: 12px; font-family: &quot;Atkinson Hyperlegible Mono&quot;">Cloverton, VIC</div>
+              </th>
+              <th style="background-color: rgb(0, 0, 0)">
+                <div class="col-name" style="font-size: 28px">The Horizon</div>
+                <div class="col-loc" style="font-size: 12px; font-family: &quot;Atkinson Hyperlegible Mono&quot;">Aurora, VIC</div>
+              </th>
+              <th style="background-color: rgb(0, 0, 0)">
+                <div class="col-name" style="font-size: 28px">The Vista</div>
+                <div class="col-loc" style="font-size: 12px; font-family: &quot;Atkinson Hyperlegible Mono&quot;">Bloomdale, VIC</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="section-row">
+              <td colspan="4" style="border-color: rgb(242, 240, 236)">Financials</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Total package price</td>
+              <td class="tnum">$660,500</td>
+              <td class="tnum">$684,000</td>
+              <td class="tnum">$720,500</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Land price</td>
+              <td class="tnum">$264,200</td>
+              <td class="tnum">$328,300</td>
+              <td class="tnum">$324,200</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Build price</td>
+              <td class="tnum">$396,300</td>
+              <td class="tnum">$355,700</td>
+              <td class="tnum">$396,300</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Estimated rental return</td>
+              <td class="tnum">~$595–$615 / wk</td>
+              <td class="tnum">~$670–$690 / wk</td>
+              <td class="tnum">~$760–$785 / wk</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Estimated rental yield</td>
+              <td class="tnum">~4.8%</td>
+              <td class="tnum">~5.2%</td>
+              <td class="tnum">~5.6%</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Likely ROI (indicative)</td>
+              <td class="tnum">10.0–11.5% p.a.</td>
+              <td class="tnum">11.5–13.0% p.a.</td>
+              <td class="tnum">10.5–12.0% p.a.</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Est. 5-yr capital growth</td>
+              <td class="tnum">~$231,700</td>
+              <td class="tnum">~$293,200</td>
+              <td class="tnum">~$234,700</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Projected 5-yr value</td>
+              <td class="tnum">~$892,000</td>
+              <td class="tnum">~$977,000</td>
+              <td class="tnum">~$955,000</td>
+            </tr>
+
+            <tr class="section-row">
+              <td colspan="4">Property</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Location</td>
+              <td class="muted">Cloverton, VIC</td>
+              <td class="muted">Aurora, VIC</td>
+              <td class="muted">Bloomdale, VIC</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Market type</td>
+              <td class="muted">Melbourne north growth corridor</td>
+              <td class="muted">Melbourne north growth corridor</td>
+              <td class="muted">Melbourne north-west growth corridor</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Beds / Baths / Garage</td>
+              <td class="tnum">4 · 2 · 2</td>
+              <td class="tnum">4 · 2 · 2</td>
+              <td class="tnum">4 · 2 · 2</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Land size</td>
+              <td class="tnum">400 m²</td>
+              <td class="tnum">448 m²</td>
+              <td class="tnum">512 m²</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">House size</td>
+              <td class="tnum">184 m² (19.8 sq)</td>
+              <td class="tnum">196 m² (21.1 sq)</td>
+              <td class="tnum">215 m² (23.1 sq)</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Title / registration</td>
+              <td class="muted">Dec 2026</td>
+              <td class="muted">Oct 2026</td>
+              <td class="muted">Mar 2027</td>
+            </tr>
+
+            <tr class="section-row">
+              <td colspan="4">Trust &amp; builder</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">City vacancy rate</td>
+              <td class="tnum">2.2% (Melbourne)</td>
+              <td class="tnum">2.2% (Melbourne)</td>
+              <td class="tnum">2.2% (Melbourne)</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Infrastructure pipeline</td>
+              <td class="muted">Hume Fwy upgrade · Donnybrook Station precinct</td>
+              <td class="muted">Mernda rail extension · Edgars Rd connector</td>
+              <td class="muted">Bulla Bypass · Sunbury rail upgrade</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Builder</td>
+              <td class="muted">Mirastone</td>
+              <td class="muted">Mirastone</td>
+              <td class="muted">AHB Homes</td>
+            </tr>
+            <tr>
+              <td class="row-label" style="font-family: &quot;Atkinson Hyperlegible Mono&quot;">Structural warranty</td>
+              <td class="tnum">25 years</td>
+              <td class="tnum">25 years</td>
+              <td class="tnum">25 years</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="compare-actions" style="margin: 60px 0px 0px">
+          <button class="btn-primary" type="button" style="font-family: Inter">Book a conversation with Adam</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer" data-screen-label="Footer">
+  Copyright © 2026 Hoyst. All rights reserved.
+</footer>
+
+<!-- Bottom bar removed -->
+
+<script>
+  // ---- Vertical scroll: keyboard-driven section jumps ----
+  // (The fixed bottom bar with dots / prev / next was removed; the
+  // page now relies on native vertical scrolling, with keyboard
+  // shortcuts kept as a convenience.)
+  const sectionIds = ['panel-intro', 'panel-aspire', 'panel-horizon', 'panel-vista', 'panel-compare'];
+
+  function sectionEls(){
+    return sectionIds.map(id => document.getElementById(id)).filter(Boolean);
+  }
+  function currentSectionIndex(){
+    const els = sectionEls();
+    const probe = window.scrollY + window.innerHeight * 0.35;
+    let bestI = 0;
+    for (let i = 0; i < els.length; i++){
+      if (els[i].offsetTop <= probe) bestI = i;
+    }
+    return bestI;
+  }
+  function scrollToSection(i){
+    const els = sectionEls();
+    const idx = Math.max(0, Math.min(els.length - 1, i));
+    const target = els[idx];
+    const topbarH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--topbar-h')) || 64;
+    const y = target.getBoundingClientRect().top + window.scrollY - topbarH + 1;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Home'){
+      scrollToSection(0); e.preventDefault();
+    } else if (e.key === 'End'){
+      scrollToSection(sectionEls().length - 1); e.preventDefault();
+    } else if (e.key === 'PageDown'){
+      scrollToSection(currentSectionIndex() + 1); e.preventDefault();
+    } else if (e.key === 'PageUp'){
+      scrollToSection(currentSectionIndex() - 1); e.preventDefault();
+    }
+  });
+</script>
+
+<script>
+  // ---- Smart topbar: hide on scroll-down, reveal on scroll-up ----
+  //      A small accumulator (`SETTLE`) absorbs noisy single-frame
+  //      direction flips from trackpad inertia so the bar doesn't
+  //      jitter; the bar is always shown near the top of the page.
+  (function(){
+    const bar = document.querySelector('.topbar');
+    if (!bar) return;
+
+    const REVEAL_OFFSET = 80;   // px from top where bar is always shown
+    const HIDE_AFTER    = 120;  // need to be past this to allow hiding
+    const SETTLE        = 10;   // px of same-direction motion to commit a flip
+
+    let lastY = window.scrollY;
+    let accum = 0;              // signed: + = downward, − = upward
+    let hidden = false;
+    let ticking = false;
+
+    function apply(nextHidden){
+      if (nextHidden === hidden) return;
+      hidden = nextHidden;
+      bar.classList.toggle('is-hidden', hidden);
+      // Keep the sticky table header glued to the bottom of the bar so
+      // there's no transparent strip showing content through when the
+      // bar hides.
+      if (hidden) document.documentElement.style.setProperty('--topbar-offset', '0px');
+      else document.documentElement.style.removeProperty('--topbar-offset');
+    }
+
+    function update(){
+      ticking = false;
+      const y = window.scrollY;
+      const dy = y - lastY;
+      lastY = y;
+
+      // Near the very top, always show — feels right when bouncing back.
+      if (y < REVEAL_OFFSET){
+        accum = 0;
+        apply(false);
+        return;
+      }
+
+      // Accumulate same-direction motion; reset on sign flip.
+      if ((dy > 0 && accum < 0) || (dy < 0 && accum > 0)) accum = 0;
+      accum += dy;
+
+      if (accum > SETTLE && y > HIDE_AFTER){
+        apply(true);
+        accum = 0;
+      } else if (accum < -SETTLE){
+        apply(false);
+        accum = 0;
+      }
+    }
+
+    function onScroll(){
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // Reveal again when focus enters the bar (e.g. tabbing into nav).
+    bar.addEventListener('focusin', () => apply(false));
+  })();
+</script>
+
+<script>
+  // ---- Stacking-card progressive-width: each card's `--cover` CSS prop
+  //      reflects how many later cards are currently overlapping it, as a
+  //      smooth 0..N float. The progress for a single upper card ramps
+  //      from 0 → 1 as its top approaches its sticky pin position, so the
+  //      lower card starts shrinking BEFORE the upper card has fully
+  //      landed — no snap. Updated per scroll frame via rAF. ----
+  (function(){
+    const cards = Array.from(document.querySelectorAll('.stack-card'));
+    if (!cards.length) return;
+
+    // The window over which an upper card drives cover progress, in px.
+    // Larger = anticipates the overlap earlier. Capped so very tall view-
+    // ports don't make the shrink feel detached from the actual motion.
+    function triggerDistance(){
+      return Math.min(window.innerHeight * 0.7, 720);
+    }
+
+    function pinnedTopFor(card){
+      // Computed `top` for the sticky pin (CSS resolves the calc() to px).
+      return parseFloat(getComputedStyle(card).top) || 0;
+    }
+
+    // Smoothstep for a softer ease into/out of the trigger window —
+    // pure linear ramp reads as mechanical, this gives gentle ends.
+    function smoothstep(t){
+      t = Math.max(0, Math.min(1, t));
+      return t * t * (3 - 2 * t);
+    }
+
+    let ticking = false;
+    function update(){
+      ticking = false;
+      const dist = triggerDistance();
+
+      // Precompute each card's overlap progress (0..1) against its pin.
+      const progress = cards.map(card => {
+        const rect = card.getBoundingClientRect();
+        const pinTop = pinnedTopFor(card);
+        const offset = rect.top - pinTop;       // px until it pins
+        const raw = 1 - offset / dist;          // 0 far away, 1 at/past pin
+        return smoothstep(raw);
+      });
+
+      // For each card, sum the progress of every LATER card — those are
+      // the ones that will visually land on top of it.
+      cards.forEach((card, i) => {
+        let cover = 0;
+        for (let j = i + 1; j < cards.length; j++){
+          cover += progress[j];
+        }
+        card.style.setProperty('--cover', cover.toFixed(4));
+      });
+    }
+
+    function onScroll(){
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+  })();
+</script>
+
+<script>
+  // ---- Scroll-reveal observers (vertical viewport) ----
+  (function(){
+    const intro = document.querySelector('.panel.intro-panel');
+    const stackCards = document.querySelectorAll('.stack-card');
+    const blocks = document.querySelectorAll(
+      '.compare-head, .compare-actions, table.matrix'
+    );
+
+    if (!('IntersectionObserver' in window)){
+      if (intro) intro.classList.add('is-active');
+      stackCards.forEach(c => c.classList.add('is-in'));
+      blocks.forEach(b => b.classList.add('is-in'));
+      return;
+    }
+
+    const introIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.intersectionRatio > 0.25){
+          entry.target.classList.add('is-active');
+          introIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: [0, 0.15, 0.3, 0.5] });
+
+    const cardIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.intersectionRatio > 0.3){
+          entry.target.classList.add('is-in');
+          cardIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: [0, 0.15, 0.3, 0.5, 0.75] });
+
+    const blockIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.intersectionRatio > 0.25){
+          entry.target.classList.add('is-in');
+          blockIO.unobserve(entry.target);
+        }
+      });
+    }, { threshold: [0, 0.15, 0.3, 0.5] });
+
+    if (intro) introIO.observe(intro);
+    stackCards.forEach(c => cardIO.observe(c));
+    blocks.forEach(b => blockIO.observe(b));
+  })();
+</script>
+
+<script>
+  // ---- Loader: sequenced entrance, ring fill, then dismiss ----
+  (function(){
+    const loader = document.getElementById('loader');
+    if (!loader) return;
+
+    // Arriving from the detail page's "Back to collection" link: skip the
+    // whole loading sequence and show the page itself immediately. Only this
+    // entry path sets #skip-loader — a fresh load or refresh still plays the
+    // loader, so we strip the flag from the URL afterwards.
+    if (location.hash === '#skip-loader'){
+      loader.style.display = 'none';
+      document.body.classList.remove('is-loading');
+      history.replaceState(null, '', location.pathname + location.search);
+      return;
+    }
+
+    const progress = loader.querySelector('.progress');
+    function setPct(p){
+      const v = Math.max(0, Math.min(1, p));
+      progress.style.strokeDashoffset = (1 - v).toString();
+    }
+    setPct(0);
+
+    // Timing must match the CSS entrance animations:
+    //   0ms      : black
+    //   500ms    : logo fades in (over 1400ms)
+    //   1300ms   : track ring fades in (over 900ms)
+    //   ~2200ms  : track fully visible — hold a beat
+    //   2600ms   : progress stroke fades in AND fill begins
+    const FILL_START = 2600;
+    const FILL_MS    = 2000;
+
+    const easeGentle     = t => 0.08 * (1 - Math.pow(1 - t, 2)) + 0.92 * t;
+    const easeInOutCubic = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const start = performance.now();
+    let pct = 0;
+
+    function tick(now){
+      const t = (now - start - FILL_START) / FILL_MS;
+      if (t > 0){
+        const target = Math.min(0.92, easeGentle(Math.min(1, t)) * 0.92);
+        pct = Math.max(pct, target);
+        setPct(pct);
+      }
+      if (pct < 0.92) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    const MIN_TOTAL = FILL_START + FILL_MS + 300;
+    const REVEAL_HOLD = 2400; // time the headline stays on screen
+
+    function finish(){
+      const elapsed = performance.now() - start;
+      const wait = Math.max(0, MIN_TOTAL - elapsed);
+      setTimeout(() => {
+        const from = pct;
+        const sweepMs = 560;
+        const t0 = performance.now();
+        function sweep(now){
+          const k = Math.min(1, (now - t0) / sweepMs);
+          const v = from + (1 - from) * easeInOutCubic(k);
+          setPct(v);
+          if (k < 1) requestAnimationFrame(sweep);
+          else {
+            // Move from loader → reveal headline
+            setTimeout(() => {
+              loader.classList.add('is-reveal');
+              // Hold the headline, then dismiss the whole overlay.
+              // Since the hero headline uses the same tokens / centered
+              // anchor, it stays visually in place as the loader fades.
+              setTimeout(() => {
+                loader.classList.add('is-gone');
+                document.body.classList.remove('is-loading');
+              }, REVEAL_HOLD);
+            }, 200);
+          }
+        }
+        requestAnimationFrame(sweep);
+      }, wait);
+    }
+
+    if (document.readyState === 'complete') finish();
+    else window.addEventListener('load', finish, {once:true});
+  })();
+</script>
+
+<script>
+  // ---- Apple-style expand: morph the Aspire thumbnail into the detail hero ----
+  (function(){
+    const DEST = 'The Aspire - Package Detail.html#from-collection';
+    const slot = document.getElementById('res-01-aspire');
+    const card = slot && slot.closest('.stack-card');
+    const link = card && card.querySelector('.view-link');
+    if (!slot || !link) return;
+
+    link.setAttribute('href', DEST);
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function currentImage(){
+      // Prefer the live image the user is actually looking at (shadow DOM),
+      // fall back to the detail page's hero asset so the box is never empty.
+      const img = slot.shadowRoot && slot.shadowRoot.querySelector('img[part="image"]');
+      const src = img && img.getAttribute('src');
+      return src || 'assets/hero-exterior-2.png';
+    }
+
+    link.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // let new-tab through
+      e.preventDefault();
+
+      if (reduce){ window.location.href = DEST; return; }
+
+      const rect = slot.getBoundingClientRect();
+
+      const backdrop = document.createElement('div');
+      backdrop.className = 'morph-backdrop';
+
+      const overlay = document.createElement('div');
+      overlay.className = 'morph-overlay';
+      overlay.style.left = rect.left + 'px';
+      overlay.style.top = rect.top + 'px';
+      overlay.style.width = rect.width + 'px';
+      overlay.style.height = rect.height + 'px';
+      overlay.style.borderRadius = '4px';
+
+      const im = document.createElement('img');
+      im.src = currentImage();
+      overlay.appendChild(im);
+
+      document.body.appendChild(backdrop);
+      document.body.appendChild(overlay);
+      document.body.classList.add('is-leaving');
+
+      // Two rAFs so the start box is committed before we animate to full-bleed.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        backdrop.classList.add('on');
+        overlay.style.left = '0px';
+        overlay.style.top = '0px';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.borderRadius = '0px';
+        overlay.style.boxShadow = '0 0 0 rgba(0,0,0,0)';
+      }));
+
+      setTimeout(() => { window.location.href = DEST; }, 820);
+    });
+  })();
+</script>
+
+</body>
+</html>
+
+<style id="__om-edit-overrides">
+#panel-intro :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) >i { font-weight: 500 !important }
+#panel-intro :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote,figcaption,label,span,a,em,strong,small,td,th,caption) >i { font-family: "Cormorant Garamond" !important }
+</style>
